@@ -1,0 +1,55 @@
+;;; early-init.el --- early init file                -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2024  Lucas Elvira Martin
+
+;; Author: Lucas Elvira Martin <lucas@debian>
+;; Keywords: 
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; This file is the first file load with emacs > 27
+
+;;; Code:
+
+;; SetupFolder
+(defvar private-emacs-directory nil
+"The folder where the emacs configuration is stored")
+(setq package-enable-at-startup nil
+      private-emacs-directory user-emacs-directory
+      ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
+      user-emacs-directory (expand-file-name "~/.cache/emacs/")
+      url-history-file (expand-file-name "url/history" user-emacs-directory))
+;; -SetupFolder
+
+;; DeferGc
+(setq site-run-file nil                  ; No site-wide run-time initializations.
+      inhibit-default-init t             ; No site-wide default library
+      gc-cons-threshold (* 50 1024 1024) ; The default is 800 kilobytes. Measured in bytes.
+      gc-cons-percentage 0.2
+      native-comp-eln-load-path (list (expand-file-name "eln-cache" user-emacs-directory)))
+;; -DeferGc
+
+(defvar file-name-handler-alist-original file-name-handler-alist)
+(setq file-name-handler-alist nil)
+
+(menu-bar-mode -1)
+(unless (and (display-graphic-p) (eq system-type 'darwin))
+  (push '(menu-bar-lines . 0) default-frame-alist))
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+
+(provide 'early-init)
+;;; early-init.el ends here

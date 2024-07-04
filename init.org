@@ -1,0 +1,75 @@
+#+OPTIONS: toc:nil
+#+EXPORT_FILE_NAME: README
+* Emacs Config
+* Table of Contents                                                     :TOC:
+** Startup
+*** Use /lexical-binding/
+
+Lexical binding is a mode that allows to use special features of the languages. It options tell the configuration that works as a program more than just a simple configuration
+
+This will generate a header at the top of the tangled file to indicate it is generated and is not meant to be modified directly.
+
+#+INCLUDE: "init.el" src emacs-lisp :lines "1-2"
+*** Early init
+The early-init file is loaded before any process of emacs, either the package system. So I will configure the directories used by Emacs to prevent the default behaviour which get dirty the configuration folder.
+
+Package initialize occurs automatically, before user-init-file is loaded, but after early-init-file. We handle package initialization, so we must prevent Emacs from doing it early! I use straight as package manager, so I need to disable the default behavior before the ~package.el~ is loaded.
+#+INCLUDE: "early-init.el" src emacs-lisp :range-begin "SetupFolder" :range-end "-SetupFolder" :lines "26-36"
+*** Startup performance
+
+Make startup faster by reducing the frequency of garbage collection and then use
+a hook to measure Emacs startup time.
+
+#+INCLUDE: "early-init.el" src emacs-lisp :lines "35-40"
+Also, we can prevent launch the hook associated with some files modification in startup and reenable it after all the process is completed
+
+#+INCLUDE: "early-init.el" src emacs-lisp :lines "41-43"
+** Disable unnecessary interfaces
+
+Befaure the windows is created, we can disable some components to prevent it renders
+
+#+INCLUDE: "early-init.el" src emacs-lisp :lines "44-49"
+** Garbage collection
+At the init-file we modified the garbage collection configuration, we can restore it and track create a profile of the startup process
+
+#+INCLUDE: "init.el" src emacs-lisp :lines "26-33"
+** Load Path
+
+All the configuration files are stored in ~modules/~ folder, so they need to be added to ~load-path~ variable
+#+INCLUDE: "init.el" src emacs-lisp :lines "37-53"
+** Define constants
+
+This part aims to setting some special configuration based on the system Emacs is running
+#+INCLUDE: "modules/init-consts.el" src emacs-lisp :lines "28-48"
+
+Get the user information
+#+INCLUDE: "modules/init-consts.el" src emacs-lisp :lines "49-55"
+
+Another constants
+#+INCLUDE: "modules/init-consts.el" src emacs-lisp :lines "56-72"
+* Package managment
+
+For package managemnt I combine ~use-package~ with ~straight~. To boot the process, I will disable the checking step that ensure the system has the newest version of each package.
+#+INCLUDE: "modules/init-package.el" src emacs-lisp :lines "28-49"
+
+* Global configugarion
+
+** Keep it clean
+
+First I define the default emacs back-up where all the cache files will be stored. I set the emacs directory in early-init to prevent emacs install staffs inside the config folder. Use no-littering to automatically set common paths to the new user-emacs-directory. Then define where will be store the temporal files.
+
+#+INCLUDE: "modules/general-config.el" src emacs-lisp :lines "29-45"
+
+*** Custom File
+Also I will change the location of the custom-file.el, setting it in the config folder
+#INCLUDE: "modules/general-config.el" src emacs-lisp :lines "60-64"
+
+** No littering
+No littering is a package that aims to help you manage the backup files
+#+INCLUDE: "modules/general-config.el" src emacs-lisp :lines "66-76"
+
+** Bindings
+
+Disable some default bindings
+#+INCLUDE: "modules/general-config.el" src emacs-lisp :lines "51-59"
+
