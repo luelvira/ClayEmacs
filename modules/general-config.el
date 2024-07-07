@@ -43,10 +43,8 @@
       require-final-newline           t)
 ;; -ResetVars
 
-;; SudoEditPac
 (use-package sudo-edit
   :commands (sudo-edit))
-;; -SudoEditPac
 
 ;; DefBindings
 ;; Unbind unneeded keys
@@ -73,11 +71,64 @@
           `(("\\`/tmp/" . nil)
             ("\\`/dev/shm/" . nil)
             ("." . ,backup-dir)))))
-;; NoLittering
+;; -NoLittering
 
+;; StartupScreen
+(setq-default inhibit-startup-screen  t
+              inhibit-startup-message t
+              inhibit-startup-echo-area-message user-full-name)
+;; -StarupScreen
 
+;; DefaultEncoding
+(set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
+(prefer-coding-system       'utf-8)     ; Add utf-8 at the front for automatic detection.
+(set-terminal-coding-system 'utf-8)     ; Set coding system of terminal output
+(set-keyboard-coding-system 'utf-8)     ; Set coding system for keyboard input on TERMINAL
+(set-language-environment "English")    ; Set up multilingual environment
+;; -DefaultEncoding
 
+;; DisableWarning
+(setq native-comp-async-report-warnings-errors nil)
+;; Set the right directory to store the native comp cache
+(add-to-list
+  'native-comp-eln-load-path
+  (expand-file-name "eln-cache/" user-emacs-directory))
+;; -DisableWarning
 
+;;Recovery
+(setq auto-save-list-file-prefix ; Prefix for generating auto-save-list-file-name
+      (expand-file-name ".auto-save-list/.saves-" user-emacs-directory)
+      auto-save-default t        ; Auto-save every buffer that visits a file
+      auto-save-timeout 20       ; Number of seconds between auto-save
+      auto-save-interval 200    ; Number of keystrokes between auto-saves
+      history-length 25
+      history-delete-duplicates t)
+(savehist-mode 1)
+;; Remember and restore the last cursor location of opened files
+(save-place-mode 1)
+(let (message-log-max)
+  (savehist-mode))
+;; -Recovery
+
+(setq-default use-short-answers t                     ; Replace yes/no prompts with y/n
+              confirm-nonexistent-file-or-buffer nil  ; Ok to visit non existent files
+              confirm-kill-emacs #'y-or-n-p)          ; Confirm before kill emacs
+
+(setq-default ad-redefinition-action 'accept     ; Silence warnings for redefinition
+              cursor-in-non-selected-windows nil ; Hide the cursor in inactive windows
+              fill-column 80                     ; Default line width
+              help-window-select t               ; Focus new help windows when opened
+              indent-tabs-mode nil               ; space insetead of tabs
+              tab-always-indent 'complete        ;first tab and then complete
+              tab-width 4
+              evil-shift-width tab-width
+              inhibit-startup-screen t           ; Disable start-up screen
+              sentence-end-double-space nil      ; Use a single space after dots
+              truncate-string-ellipsis "…")
+
+;; Force split vertically
+(setq split-width-threshold 160
+      split-height-threshold nil)
 
 
 (provide 'general-config)

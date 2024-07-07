@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Lucas Elvira Martin
 
 ;; Author: Lucas Elvira Martin <lucas@debian>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -55,10 +55,5 @@
 (require 'init-package)
 (require 'general-config)
 
-
-
-
 (provide 'init)
 ;;; init.el ends here
-
-

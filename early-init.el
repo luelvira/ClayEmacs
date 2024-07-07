@@ -20,36 +20,43 @@
 
 ;;; Commentary:
 
-;; This file is the first file load with emacs > 27
+;; This file is the first file load with Emacs > 27
 
 ;;; Code:
 
 ;; SetupFolder
 (defvar private-emacs-directory nil
-"The folder where the emacs configuration is stored")
-(setq package-enable-at-startup nil
-      private-emacs-directory user-emacs-directory
+  "The folder where the Emacs configuration is stored.")
+(setq private-emacs-directory user-emacs-directory
       ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
       user-emacs-directory (expand-file-name "~/.cache/emacs/")
       url-history-file (expand-file-name "url/history" user-emacs-directory))
 ;; -SetupFolder
 
-;; DeferGc
+;; DisablePackage
+(setq package-enable-at-startup nil)
+;; -DisablePackage
+
+;; SpeedUp
 (setq site-run-file nil                  ; No site-wide run-time initializations.
       inhibit-default-init t             ; No site-wide default library
       gc-cons-threshold (* 50 1024 1024) ; The default is 800 kilobytes. Measured in bytes.
       gc-cons-percentage 0.2
       native-comp-eln-load-path (list (expand-file-name "eln-cache" user-emacs-directory)))
-;; -DeferGc
+;; -SpeedUp
 
+;; FilenameHandler
 (defvar file-name-handler-alist-original file-name-handler-alist)
 (setq file-name-handler-alist nil)
+;; -FilenameHandler
 
+;; DefaultUI
 (menu-bar-mode -1)
 (unless (and (display-graphic-p) (eq system-type 'darwin))
   (push '(menu-bar-lines . 0) default-frame-alist))
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+;; -DefaultUI
 
 (provide 'early-init)
 ;;; early-init.el ends here

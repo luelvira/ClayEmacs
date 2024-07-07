@@ -24,28 +24,56 @@
 
 ;;; Code:
 
-;; Straight
-(setq straight-check-for-modifications nil)
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+(if (eq system-type 'gnu/linux)
+    ;; Straight
+    (progn
+      (setq straight-check-for-modifications nil)
+      (defvar bootstrap-version)
+      (let ((bootstrap-file
+             (expand-file-name
+              "straight/repos/straight.el/bootstrap.el"
+              (or (bound-and-true-p straight-base-dir)
+                  user-emacs-directory)))
+            (bootstrap-version 7))
+        (unless (file-exists-p bootstrap-file)
+          (with-current-buffer
+              (url-retrieve-synchronously
+               "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+               'silent 'inhibit-cookies)
+            (goto-char (point-max))
+            (eval-print-last-sexp)))
+        (load bootstrap-file nil 'nomessage))
 
-;; Use straight by default
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t)
-;; -Straight
+      ;; Use straight by default
+      (straight-use-package 'use-package)
+      (setq straight-use-package-by-default t))
+  ;; -Straight
+
+  (progn
+    ;; DefaultPackageManagement
+    (setq package-user-dir (expand-file-name "elpa" user-emacs-directory)
+          package-archives
+          '(("gnu" . "https://elpa.gnu.org/packages/")
+            ("melpa" . "https://melpa.org/packages/")))
+    ;; -DefaultPackageManagement
+    ;; UsePackage
+    ;; Install use-package if not installed
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+
+    (eval-and-compile
+      (setq use-package-always-ensure t)
+      (setq use-package-expand-minimally t)
+      (setq use-package-compute-statistics t)
+      (setq use-package-enable-imenu-support t))
+
+    (eval-when-compile
+      (require 'use-package)
+      (require 'bind-key))
+    ;; -UsePackage
+    ))
+
 
 (provide 'init-package)
 ;;; init-package.el ends here
