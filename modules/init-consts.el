@@ -1,11 +1,7 @@
-;;; init-consts.el --- system configuration          -*- lexical-binding: t; -*-
+;;; init-consts.el --- setup default consts -*- lexical-binding: t -*-
+;; This file is not part of GNU Emacs
 
-;; Copyright (C) 2024  Lucas Elvira Martin
-
-;; Author: Lucas Elvira Martin <lucas@debian>
-;; Keywords: 
-
-;; This program is free software; you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
@@ -18,12 +14,13 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 ;;; Commentary:
 
-;; Default constants based on the current systems. This practice allows to tweek the behaviour of Emacs based on the computer it is running
+;; This file has been automatically generated. DO NOT EDIT.
+;; Sources are available from https://github.com/luelvira/dotfiles/
 
 ;;; Code:
-
 
 ;; MachineInfo
 (defconst is-termux
@@ -47,11 +44,14 @@
 ;; -MachineInfo
 
 ;; UserInfo
+(defvar user-name nil
+  "The name to be used in message.")
+
 (setq
   user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
   user-full-name (string-trim (shell-command-to-string "git config --global user.name"))
   user-name (getenv "USER"))
-;; userInfo
+;; -userInfo
 
 ;; Consts
 (defconst lem/dotfiles "~/Documents/git/dotfiles/"

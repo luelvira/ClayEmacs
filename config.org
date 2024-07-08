@@ -10,7 +10,7 @@
 #+DATE: [2023-12-07 Thu]
 #+STARTUP: overview
 #+TAGS: INACTIVE(i) TOC(t)
-#+auto_tangle: t
+#+auto_tangle: nil
 
 * Some hints                                                       :INACTIVE:
 ** Enable literature configuration
@@ -73,22 +73,34 @@ This will generate a header at the top of the tangled file to indicate it is gen
 :HEADER-ARGS:emacs-lisp+: :shebang ;;; early-init.el --- early init file -*- lexical-binding: t -*-
 :END:
 
-The early-init file is loaded before any process of emacs, either the package
-system. I use straight as package manager, so I need to disable the default
-behavior before the ~package.el~ is loaded
-
 #+begin_src emacs-lisp
 <<header>>
 #+end_src
 
+The /early-init/ file is loaded before any process of emacs, either the package
+system. So I will configure the directories used by Emacs to prevent the default
+behavior which get dirty the configuration folder.
+
 #+begin_src emacs-lisp
-  (defvar private-emacs-directory nil
+;; SetupFolder
+(defvar private-emacs-directory nil
   "The folder where the emacs configuration is stored")
-  (setq package-enable-at-startup nil
-	private-emacs-directory user-emacs-directory
+(setq private-emacs-directory "~/.emacs.d-develop/"
       ;; Change the user-emacs-directory to keep unwanted things out of ~/.emacs.d
-	user-emacs-directory (expand-file-name "~/.cache/emacs/")
-  url-history-file (expand-file-name "url/history" user-emacs-directory))
+      user-emacs-directory (expand-file-name "~/.cache/emacs/")
+      url-history-file (expand-file-name "url/history" user-emacs-directory))
+;; -SetupFolder
+#+end_src
+
+Package initialize occurs automatically, before user-init-file is loaded, but
+after early-init file. We handle package initialization, so we must prevent
+Emacs from doing it early! I use straight as package manager, so I need to
+disable the default behavior before the ~package.el~ is loaded.
+
+#+begin_src emacs-lisp
+;; DisablePackage
+(setq package-enable-at-startup nil)
+;; -DisablePackage
 #+end_src
 
 ** Startup performance
@@ -104,34 +116,48 @@ a hook to measure Emacs startup time.
       native-comp-eln-load-path (list (expand-file-name "eln-cache" user-emacs-directory)))
 #+end_src
 
-*** Disable ~package-enable-at-startup~
-Package initialize occurs automatically, before user-init-file is loaded, but after early-init-file. We handle package initialization, so we must prevent Emacs from doing it early!
+After Emacs is launched, we should restore the value of this modifications with
+a hook. Also, this allows us to keep a profile of the time needed for this
+process.
+
+#+INCLUDE: "init.el" src emacs-lisp :range-begin "BetterGC" :range-end "-BetterGC"
+
+Also, we can prevent launch the hook associated with some files modification in
+startup and reenable it after all the process is completed. From [[https://github.com/MatthewZMD/.emacs.d][MatthewZMD]]
+
+#+begin_quote
+Every file opened and loaded by Emacs will run through this list to check for a proper handler for the file, but during startup, it won’t need any of them.
+#+end_quote
+
+
 #+begin_src emacs-lisp
+;; FilenameHandler
 (defvar file-name-handler-alist-original file-name-handler-alist)
 (setq file-name-handler-alist nil)
+;; -FilenameHandler
 #+end_src
 
 *** Disable unnecessary interface
 #+begin_src emacs-lisp
+;; DefaultUI
 (menu-bar-mode -1)
 (unless (and (display-graphic-p) (eq system-type 'darwin))
   (push '(menu-bar-lines . 0) default-frame-alist))
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)
+;; DefaultUI
 #+end_src
 
-* Init file
-
-The init file is the entry point. This file should have the base
-setting and import the rest of the modules.
+* Bootstrap Configuration
 
 #+begin_src emacs-lisp
-<<header>>
 <<require>>
 #+end_src
+
 ** Profile emacs start up
 
 #+begin_src emacs-lisp
+;; BetterGC
 ;; Profile emacs startup
 (add-hook 'emacs-startup-hook
           (lambda ()
@@ -140,11 +166,13 @@ setting and import the rest of the modules.
             (makunbound 'file-name-handler-alist-original)
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
                      (emacs-init-time "%.2f") gcs-done)))
+;; -BetterGC
 #+end_src
 ** Update load path
 
 Add the lisp script to the path
 #+begin_src emacs-lisp
+;; LoadPath
 (defun update-to-load-path (folder)
   "Update FOLDER and its subdirectories to `load-path'."
   (let ((base folder))
@@ -159,13 +187,26 @@ Add the lisp script to the path
             (add-to-list 'load-path name)))))))
 
 (update-to-load-path (expand-file-name "modules" private-emacs-directory))
+;; -LoadPath
 #+end_src
 
-* Package system
-
-Using [[https://github.com/radian-software/straight.el][straight]] for package management and disable checking (for speedup).
+** Package system
+:PROPERTIES:
+:VISIBILITY: folded
+:HEADER-ARGS:emacs-lisp+: :tangle "modules/init-package.el"
+:HEADER-ARGS:emacs-lisp+: :shebang ;;; init-package.el --- setup package -*- lexical-binding: t -*-
+:END:
 
 #+begin_src emacs-lisp
+<<header>>
+#+end_src
+
+For package management I combine ~use-package~ with [[https://github.com/radian-software/straight.el][straight]]. To boot the process,
+I will disable the checking step that ensure the system has the newest version
+of each package.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref straight
+;; Straight
 (setq straight-check-for-modifications nil)
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -186,46 +227,78 @@ Using [[https://github.com/radian-software/straight.el][straight]] for package m
 ;; Use straight by default
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
+;; -Straight
+
 #+end_src
 
-* Dashboard
+In systems different to Linux, I don't use straight, I prefer to use the default
+one system.
 
-Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
+#+begin_src emacs-lisp :tangle no :noweb-ref DefaultPackageManagement
+;; DefaultPackageManagement
+(setq package-user-dir (expand-file-name "elpa" user-emacs-directory)
+      package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://melpa.org/packages/")))
+;; -DefaultPackageManagement
+#+end_src
+
+When Emacs uses the default package manager, it is needed to install ~use-package~
+
+#+begin_src emacs-lisp :tangle no :noweb-ref UsePackage
+;; UsePackage
+;; Install use-package if not installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-and-compile
+  (setq use-package-always-ensure t)
+  (setq use-package-expand-minimally t)
+  (setq use-package-compute-statistics t)
+  (setq use-package-enable-imenu-support t))
+
+(eval-when-compile
+  (require 'use-package)
+  (require 'bind-key))
+;; -UsePackage
+
+#+end_src
 
 #+begin_src emacs-lisp
-(use-package dashboard
-  :disabled
-  :diminish (dashboard-mode)
-  :init      ;; tweak dashboard config before loading it
-  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))
-        dashboard-banner-logo-title "Welcome to Emacs!"
-        dashboard-set-navigator t
-        dashboard-set-heading-icons t
-        dashboard-set-file-icons t
-        dashboard-startup-banner 'logo
-        dashboard-center-content nil
-        dashboard-items '((recents   . 5)
-                          (agenda    . 5 )
-                          (projects  . 5))
-        dashboard-display-icons-p t ;; display icons on both GUI and terminal
-        dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
-  :config
-  (dashboard-setup-startup-hook)
-  :custom
-  (dashboard-modify-heading-icons '((recents . "file-text")
-                                    (bookmarks . "book"))))
+(if (eq system-type 'gnu/linux)
+    (progn
+      <<straight>>)
+  (progn
+    <<DefaultPackageManagement>>
+    <<UsePackage>>)
+)
 #+end_src
 
-* General configuration
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
+(provide 'init-package)
+;;; init-package.el ends here
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+(require 'init-package)
+#+end_src
+
+** Define constants
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle "modules/init-consts.el"
+:HEADER-ARGS:emacs-lisp+: :shebang ;;; init-consts.el --- setup default consts -*- lexical-binding: t -*-
+:END:
+
+#+begin_src emacs-lisp
 <<header>>
 #+end_src
 
-** System settings
-
+*** Get environment variables
 This part aims to setting some special configuration based on the system Emacs is running
 
 #+begin_src emacs-lisp
+;; MachineInfo
 (defconst is-termux
   (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
   "Boolean variable to determinate if Emacs is runing into termux system.")
@@ -244,14 +317,64 @@ This part aims to setting some special configuration based on the system Emacs i
 
 (defvar user-name nil
   "The name to be used in message.")
+;; -MachineInfo
+#+end_src
+
+*** Get user information
+#+begin_src emacs-lisp
+;; UserInfo
+(defvar user-name nil
+  "The name to be used in message.")
 
 (setq
   user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
   user-full-name (string-trim (shell-command-to-string "git config --global user.name"))
   user-name (getenv "USER"))
+;; -userInfo
+#+end_src
 
+*** Runtime constants
+
+#+begin_src emacs-lisp
+;; Consts
 (defconst lem/dotfiles "~/Documents/git/dotfiles/"
   "The path where the dotfiles git repo is stored.")
+
+(defconst python-p
+  (or (executable-find "python3")
+      (and (executable-find "python")
+           (> (length (shell-command-to-string "python --version | grep 'Python 3'")) 0)))
+  "Do we have python3?")
+
+(defconst pip-p
+  (or (executable-find "pip3")
+      (and (executable-find "pip")
+           (> (length (shell-command-to-string "pip --version | grep 'python 3'")) 0)))
+  "Do we have pip3?")
+;; -Consts
+#+end_src
+
+#+begin_src emacs-lisp
+(provide 'init-consts)
+;;; init-consts.el ends here
+#+end_src
+
+#+begin_src emacs-lisp :tangle init.el
+(require 'init-consts)
+#+end_src
+
+* General configuration
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle "modules/init-core.el"
+:HEADER-ARGS:emacs-lisp+: :shebang ;;; module/init-core.el --- setup default configuration -*- lexical-binding: t -*-
+:END:
+
+#+begin_src emacs-lisp
+<<header>>
+<<core-require>>
+
+(eval-when-compile
+  (require 'init-consts))
 #+end_src
 
 ** Keep it clean
@@ -261,33 +384,41 @@ stored. I set the emacs directory in early-init to prevent emacs install staffs
 inside the config folder. Use no-littering to automatically set common paths to
 the new user-emacs-directory. Then define where will be store the temporal files
 
-#+begin_src emacs-lisp
-(setq backup-by-copying      t   ; instead of renaming current file (clobbers links)
-      create-lockfiles       nil
-      make-backup-files      t   ; Backup of a file the first time it is saved.
-      backup-by-copying      t   ; Don't delink hardlinks
-      version-control        t   ; Use version numbers on backups
-      delete-old-versions    t   ; Automatically delete excess backups
-      kept-new-versions      6   ; how many of the newest versions to keep
-      kept-old-versions      5   ; and how many of the old
-      auto-save-default      t
-      ;; Don't auto-disable auto-save after deleting big chunks. This defeats
-      ;; the purpose of a failsafe. This adds the risk of losing the data we
-      ;; just deleted, but I believe that's VCS's jurisdiction, not ours.
-      auto-save-include-big-deletions t
-      require-final-newline           t)
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+;; ResetVars
+backup-by-copying      t   ; instead of renaming current file (clobbers links)
+create-lockfiles       nil
+make-backup-files      t   ; Backup of a file the first time it is saved.
+backup-by-copying      t   ; Don't delink hardlinks
+version-control        t   ; Use version numbers on backups
+delete-old-versions    t   ; Automatically delete excess backups
+kept-new-versions      6   ; how many of the newest versions to keep
+kept-old-versions      5   ; and how many of the old
+auto-save-default      t
+require-final-newline  t
+#+end_src
+
+Don't auto-disable auto-save after deleting big chunks. This defeats
+the purpose of a failsafe.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+auto-save-include-big-deletions t
+;; -ResetVars
 #+end_src
 
 Also I will change the location of the ~custom-file.el~, setting it in the config folder
 
 #+begin_src emacs-lisp
+;; SetupCustomFile
 (setq custom-file (expand-file-name "custom.el" private-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file 'noerror 'nomessage))
+;; -SetupCustomFile
 #+end_src
 
 *** No littering
 #+begin_src emacs-lisp
+;; NoLittering
 (use-package no-littering
   :demand t
   :config
@@ -297,35 +428,32 @@ Also I will change the location of the ~custom-file.el~, setting it in the confi
           `(("\\`/tmp/" . nil)
             ("\\`/dev/shm/" . nil)
             ("." . ,backup-dir)))))
-#+end_src
-
-** Startup screen
-
-#+begin_src emacs-lisp
-(setq-default inhibit-startup-screen  t
-              inhibit-startup-message t
-              inhibit-startup-echo-area-message user-full-name)
+;; NoLittering
 #+end_src
 
 ** Default encoding
 
 #+begin_src emacs-lisp
+;; DefaultEncoding
 ;; Set encding by default
 (set-default-coding-systems 'utf-8)     ; Default to utf-8 encoding
 (prefer-coding-system       'utf-8)     ; Add utf-8 at the front for automatic detection.
 (set-terminal-coding-system 'utf-8)     ; Set coding system of terminal output
 (set-keyboard-coding-system 'utf-8)     ; Set coding system for keyboard input on TERMINAL
 (set-language-environment "English")    ; Set up multilingual environment
+;; -DefaultEncoding
 #+end_src
 
 ** Disable warnings when native compilation
 
 #+begin_src emacs-lisp
+;; DisableWarning
 (setq native-comp-async-report-warnings-errors nil)
 ;; Set the right directory to store the native comp cache
 (add-to-list
   'native-comp-eln-load-path
   (expand-file-name "eln-cache/" user-emacs-directory))
+;; -DisableWarning
 #+end_src
 
 ** Recovery
@@ -335,13 +463,13 @@ the time of the crash from their auto-save files. To do this, start Emacs again
 and type the command M-x recover-session. Here, we parameterize how files are
 saved in the background.
 
-#+begin_src emacs-lisp
-(setq auto-save-list-file-prefix ; Prefix for generating auto-save-list-file-name
-      (expand-file-name ".auto-save-list/.saves-" user-emacs-directory)
-      auto-save-default t        ; Auto-save every buffer that visits a file
-      auto-save-timeout 20       ; Number of seconds between auto-save
-      auto-save-interval 200)    ; Number of keystrokes between auto-saves
-
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+;; Recovery
+auto-save-list-file-prefix (expand-file-name ".auto-save-list/.saves-" user-emacs-directory)
+auto-save-default t        ; Auto-save every buffer that visits a file
+auto-save-timeout 20       ; Number of seconds between auto-save
+auto-save-interval 200     ; Number of keystrokes between auto-saves
+;; -Recovery
 #+end_src
 
 ** History
@@ -357,13 +485,16 @@ loading it.
 #+end_src
 
 Save every possible history
-#+begin_src emacs-lisp :noweb-ref require :tangle no
+#+begin_src emacs-lisp :tangle no :noweb-ref core-require
 (require 'savehist)
 #+end_src
 
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+history-length 25
+history-delete-duplicates t
+#+end_src
+
 #+begin_src emacs-lisp
-(setq history-length 25
-      history-delete-duplicates t)
 (savehist-mode 1)
 ;; Remember and restore the last cursor location of opened files
 (save-place-mode 1)
@@ -376,96 +507,134 @@ No duplicates in history
   (savehist-mode))
 #+end_src
 
-** Confirmation prompts
+** Force split vertically
 
-#+begin_src emacs-lisp
-(setq-default use-short-answers t                     ; Replace yes/no prompts with y/n
-              confirm-nonexistent-file-or-buffer nil  ; Ok to visit non existent files
-              confirm-kill-emacs #'y-or-n-p)          ; Confirm before kill emacs
-#+end_src
-
-** Defaults
-
-#+begin_src emacs-lisp
-(setq-default ad-redefinition-action 'accept     ; Silence warnings for redefinition
-              cursor-in-non-selected-windows nil ; Hide the cursor in inactive windows
-              fill-column 80                     ; Default line width
-              help-window-select t               ; Focus new help windows when opened
-              indent-tabs-mode nil               ; space insetead of tabs
-              tab-always-indent 'complete        ;first tab and then complete
-              tab-width 4
-              evil-shift-width tab-width
-              inhibit-startup-screen t           ; Disable start-up screen
-              sentence-end-double-space nil      ; Use a single space after dots
-              truncate-string-ellipsis "…")
-
-#+end_src
-
-Force split vertically
-
-#+begin_src emacs-lisp
-(setq split-width-threshold 160
-      split-height-threshold nil)
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+;; SplitConfig
+split-width-threshold 160
+split-height-threshold nil
+;; -SplitConfig
 #+end_src
 
 Resolve symlinks when opening files, so that any operations are conducted from
 the file's true directory (like `find-file').
 
-#+begin_src emacs-lisp
-(setq find-file-visit-truename t
-      vc-follow-symlinks t)
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+;; FollowLinks
+find-file-visit-truename t
+vc-follow-symlinks t
+;; -FollowLinks
 #+end_src
 
 ** Set up tramp
 
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+;; tramp
+tramp-default-method "ssh"
+;; -tramp
+#+end_src
+
+** Join all the setq blocks
 #+begin_src emacs-lisp
-(setq tramp-default-method "ssh")
+(setq
+  <<core-setq>>
+)
+#+end_src
+
+** Confirmation prompts
+
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setqdefault
+use-short-answers t                     ; Replace yes/no prompts with y/n
+confirm-nonexistent-file-or-buffer nil  ; Ok to visit non existent files
+confirm-kill-emacs #'y-or-n-p           ; Confirm before kill emacs
+#+end_src
+
+** Defaults
+
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setqdefault
+ad-redefinition-action 'accept          ; Silence warnings for redefinition
+cursor-in-non-selected-windows nil      ; Hide the cursor in inactive windows
+fill-column 80                          ; Default line width
+help-window-select t                    ; Focus new help windows when opened
+indent-tabs-mode nil                    ; space insetead of tabs
+tab-always-indent 'complete             ; first tab and then complete
+tab-width 4
+evil-shift-width tab-width
+inhibit-startup-screen t                ; Disable start-up screen
+sentence-end-double-space nil           ; Use a single space after dots
+truncate-string-ellipsis "…"
+#+end_src
+
+#+begin_src emacs-lisp
+(setq-default
+  <<core-setqdefault>>)
 #+end_src
 
 ** Emacs as server
 
-This command allow to run emacs as server, so all the startup can be done once time and connect client to it each time you need.
+This command allow to run emacs as server, so all the startup can be done once
+time and connect client to it each time you need.
+
+#+begin_src emacs-lisp :tangle no :noweb-ref core-require
+(require 'server)
+#+end_src
 
 #+begin_src emacs-lisp
-(require 'server)
+;; EmacsServer
 (unless (or is-termux
             (server-running-p))
   (server-start))
+;; -EmacsServer
 #+end_src
 
 ** Auto revert buffers
+
 Autorevert enables reload from disk any buffer when it changes. This includes
 dired buffers
 
 #+begin_src emacs-lisp
+;; Autorevert
 (setq global-auto-revert-non-file-buffers t)
 (global-auto-revert-mode 1)
+;; -Autorevert
 #+end_src
 
-** Maximize windows by default and setup transparency
+** Enable scape instead of C-g
+
+#+begin_src emacs-lisp
+;; UseEscape
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;; By default, Emacs requires you to hit ESC trhee times to escape quit the minibuffer
+(global-set-key [escape] 'keyboard-escape-quit)
+;; UseEscape
+#+end_src
+
+** TODO Maximize windows by default and setup transparency
 
 In order of maximize the frame and change the transparency I use the
 ~set-frame-parameter~ expression and the ~add-to-list 'default-frame-alist~. The
 function have been moved to the lisp library
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (unless is-termux
   (set-frame-parameter (selected-frame) 'fullscreen 'maximized)
   (add-to-list 'default-frame-alist '(fullscreen . maximized)))
 #+end_src
 
-** Enable scape instead of C-g
-#+begin_src emacs-lisp
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
-;; By default, Emacs requires you to hit ESC trhee times to escape quit the minibuffer
-(global-set-key [escape] 'keyboard-escape-quit)
+** TODO Startup screen
+
+#+begin_src emacs-lisp :tangle no
+(setq-default inhibit-startup-screen  t
+              inhibit-startup-message t
+              inhibit-startup-echo-area-message user-full-name)
 #+end_src
 
 ** Bookmarks and buffers
 
-#+begin_src emacs-lisp
-(setq bookmark-default-file
-      (expand-file-name "bookmarks" user-emacs-directory))
+#+begin_src emacs-lisp :tangle no :noweb-ref core-setq
+;; Bookmarks
+bookmark-default-file (expand-file-name "bookmarks" user-emacs-directory)
+;; -Bookmarks
 #+end_src
 
 *** Set up keys                                                          :KEYS:
@@ -510,70 +679,63 @@ navigate between them and filter them.
   "bs" '(save-buffer          :whick-key "Save current buffer")
 #+end_src
 
-** Custom functions
-*** Configuration file
-We can set a shortcut to open the config file from the emacs directory
-
+** END OF CORE
 #+begin_src emacs-lisp
-(defun lem/go-dotfiles ()
-  (interactive)
-  (lem/interactive-find-file lem/dotfiles))
-
-(defun lem/go-emacs-config ()
-  (interactive)
-  (find-file (expand-file-name "config/emacs/config.org" lem/dotfiles)))
-
-(defun lem/go-emacs-init ()
-  (interactive)
-  (find-file (expand-file-name "init.el" private-emacs-directory)))
-
-(defun lem/go-emacs-modules ()
-  (interactive)
-  (lem/interactive-find-file (expand-file-name "lisp/" private-emacs-directory)))
-
-(defun lem/jump-dotfiles ()
-  (interactive)
-  (dired lem/dotfiles))
+(provide 'init-core)
+;;; init-core.el ends here
 #+end_src
 
-** END OF CORE                                                         :END:
-#+begin_src emacs-lisp :tangle no
-(provide 'lem-core)
-;;; lem-core.el ends here
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-(require 'lem-core)
+#+begin_src emacs-lisp :tangle init.el
+(require 'init-core)
 #+end_src
 
 * lem module
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle modules/init-mode.el
+:END:
+
+#+begin_src emacs-lisp
+<<header>>
+
+(eval-when-compile
+  (require 'init-consts))
+#+end_src
 
 This module contains some custom functions
 
 #+begin_src emacs-lisp
+;; Group
 (defgroup lem ()
   "Group for some personal variables."
   :prefix  'lem
-  :version '0.0.1)
+  :version '0.1.0
+  :group   'config)
+;; -Group
 #+end_src
 
-** Define transparency
+I like to have transparency in some frames such as the terminal or editors like Emacs.
 
 #+begin_src emacs-lisp
-(defcustom lem/alpha-value 90
+;; DefineCustoms
+(defcustom lem-alpha-value 90
   "The default value of transparency used for the current frame."
   :set (lambda (k v)
          (set-default k v)
-         (when (fboundp 'lem/set-background) (lem/set-background)))
+         (when (fboundp 'lem-set-background) (lem-set-background)))
   :group 'lem
   :type '(number))
+#+end_src
 
-(defun lem/set-background ( &optional frame)
+This functions allows to change the opacity of the current frame
+
+#+begin_src emacs-lisp :tangle no :noweb-ref group-functions
+(defun lem-set-background ( &optional frame)
+"Change the opactiy of the current FRAME with the value of lem-alpha-value."
   (unless is-termux
-    (let ((alpha (if (boundp 'lem/alpha-value) lem/alpha-value 100)))
+    (let ((alpha (if (boundp 'lem-alpha-value) lem-alpha-value 100)))
       (let ((tuple `(,alpha . ,alpha)))
         (set-frame-parameter frame 'alpha tuple)
-        (add-to-list 'default-frame-alist `(alpha-background . ,lem/alpha-value))))))
+        (add-to-list 'default-frame-alist `(alpha-background . ,lem-alpha-value))))))
 #+end_src
 
 ** Sync files
@@ -588,7 +750,9 @@ contains the org files only, and it is named sync.
   "The path where the sync file is stored."
   :type 'string
   :group 'lem)
+#+end_src
 
+#+begin_src emacs-lisp :tangle no :noweb-ref group-functions
 (defun lem/sync (path)
   "Call the sync comand with the project to be syncrhonize.
 PATH: is the dir where the git repo is"
@@ -607,7 +771,8 @@ PATH: is the dir where the git repo is"
 
 ** File operations
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no :noweb-ref group-functions
+;; FilesFunctions
 (defun lem/delete-this-file ()
   "Delete the current file and kill the buffer."
   (interactive)
@@ -637,38 +802,95 @@ PATH: is the dir where the git repo is"
                    name (file-name-nondirectory new-name)))))))
 
 (defun lem/interactive-find-file (dir)
+  "Use `find-file' interactively to search in the current directory.
+DIR the current directory"
   (let ((default-directory dir))
     (call-interactively 'find-file)))
+
+;; -FilesFunctions
 #+end_src
 
-** Define the key bindings                                            :KEYS:
-#+begin_src emacs-lisp :noweb-ref keybinding
+#+begin_src emacs-lisp :noweb-ref keybinding :tangle no
 "fD" '(lem/delete-this-file :which-key "Delete current file")
 "fR" '(lem/rename-this-file :which-key "Rename current file")
 #+end_src
 
 ** Reload emacs
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no :noweb-ref group-functions
+
+;; ReloadFunction
 (defun lem/reload-init-file ()
+  "Reload the init file."
   (interactive)
   (load-file user-init-file)
   (load-file user-init-file))
+;; -ReloadFunction
 #+end_src
 
-** Define the key bindings                                            :KEYS:
-#+begin_src emacs-lisp :noweb-ref keybinding
+#+begin_src emacs-lisp :noweb-ref keybinding :tangle no
 "ER" '(lem/reload-init-file :which-key "Reload init file")
 #+end_src
 
+** Configuration file
+We can set a shortcut to open the config file from the emacs directory
+
+#+begin_src emacs-lisp :tangle no :noweb-ref group-functions
+
+;; ConfigFunctions
+(defun lem/go-dotfiles ()
+  "Interactively navigate the dotfiles folder."
+  (interactive)
+  (lem/interactive-find-file lem/dotfiles))
+
+(defun lem/go-emacs-config ()
+  "Open the config.org file."
+  (interactive)
+  (find-file (expand-file-name "config/emacs/config.org" lem/dotfiles)))
+
+(defun lem/go-emacs-init ()
+  "Open the init file."
+  (interactive)
+  (find-file (expand-file-name "init.el" private-emacs-directory)))
+
+(defun lem/go-emacs-modules ()
+  "Navigate the modules folder."
+  (interactive)
+  (lem/interactive-find-file (expand-file-name "modules/" private-emacs-directory)))
+
+(defun lem/jump-dotfiles ()
+  "Open `dired' in the dotfiles folder."
+  (interactive)
+  (dired lem/dotfiles))
+;; -ConfigFunctions
+
+#+end_src
+
+#+begin_src emacs-lisp
+<<group-functions>>
+#+end_src
+
+#+begin_src emacs-lisp
+(provide 'init-mode)
+;;; init-mode.el ends here
+#+end_src
+
 * Theming
-#+begin_src emacs-lisp :tangle no
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle modules/init-theme.el
+:END:
+
+#+begin_src emacs-lisp
 <<header>>
+
+(eval-when-compile (require 'init-consts))
 #+end_src
 
 ** Reduce distractions
 
+Remove unnecessary UI
 #+begin_src emacs-lisp
+;; UnnecessaryUI
 (unless is-termux
   (tool-bar-mode    -1)
   (scroll-bar-mode  -1)
@@ -676,29 +898,32 @@ PATH: is the dir where the git repo is"
   (tooltip-mode     -1)
   (menu-bar-mode    -1)
   (setq-default fringes-outside-margins t))
+;; UnnecessaryUI
 
-(setq visible-bell t)
-(electric-indent-mode -1)
-(electric-pair-mode -1)
+#+end_src
 
+#+begin_src emacs-lisp
 ;; Reduce the clutter in the fringes; we'd like to reserve that space for more
-(setq indicate-buffer-boundaries nil
-      indicate-empty-lines nil
-      frame-title-format "%b - GNU Emacs"
-      icon-title-format frame-title-format
-      use-dialog-box nil
+(setq indicate-buffer-boundaries         nil
+      indicate-empty-lines               nil
+      frame-title-format                 "%b - GNU Emacs"
+      icon-title-format                   frame-title-format
+      use-dialog-box                      nil
       window-divider-default-places       t
       window-divider-default-bottom-width 1
-      window-divider-default-right-width  1)
+      window-divider-default-right-width  1
+      visible-bell                        t)
 
 (add-hook 'emacs-startup-hook #'window-divider-mode)
 #+end_src
 
 ** Configure lines
+
 Set ~display-line-numbers-width~ to 3 make easy to prevent recalculate the width
 with some large files
 
 #+begin_src emacs-lisp
+; DisplayLines
 (setq-default dispaly-line-numbers-width 3
               display-line-numbers-widen t)
 #+end_src
@@ -709,15 +934,27 @@ Enable line numbers for some modes
                 prog-mode-hook
                 conf-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 1))))
+; -DisplayLines
 #+end_src
 
-** modeline
+** Modeline
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle modules/init-modeline.el
+:END:
+
+#+begin_src emacs-lisp
+<<header>>
+
+(eval-when-compile
+  (require 'init-consts))
+#+end_src
 
 *NOTE:* The first time you load your configuration on a new machine, you'll need
 to run `M-x all-the-icons-install-fonts` so that mode line icons display
 correctly.
 
 #+begin_src emacs-lisp
+;; vars used for the modeline
 (setq display-time-format "%H:%M %b %y"
       display-time-default-load-average nil)
 (display-time-mode 1)
@@ -762,14 +999,14 @@ Above there is the config for the doom-modeline
   (mood-line-mode))
 #+end_src
 
-** diminish
+*** diminish
 
 The diminish package hides pesky minor modes from the modeline
 #+begin_src emacs-lisp
 (use-package diminish)
 #+end_src
 
-** Minions
+*** Minions
 
 Minions is a package that implements a nested menu which gives access to all known minor modes
 
@@ -778,31 +1015,49 @@ Minions is a package that implements a nested menu which gives access to all kno
   :hook ((doom-modeline-mode mood-line-mode) . minions-mode))
 #+end_src
 
-** create frame hook
-
-Emacs in daemon mode has a problem loading the fonts. By default, the init file
-is not read until the first frame is loaded, so the changes on the ui should be
-done after it.
-
-Emacs has some ~hooks~ like the ~after-make-frame-functions~, which allows us to
-call a function after a frame is created. This function receive as argument the
-current frame
+** Fonts
+:PROPERTIES:
+:HEADER-ARGS:emacs-lisp+: :tangle modules/init-fonts.el
+:END:
 
 #+begin_src emacs-lisp
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-              (lambda (frame)
-                (lem/set-fonts frame)
-                (lem/set-background frame)))
-  (add-hook 'after-init-hook
-            (lambda ()
-              (lem/set--fonts)
-              (lem/set-background))))
+<<header>>
 #+end_src
 
-** Fonts
-*** Functions to set up the fonts
+*** Setup icons
+
+This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
+
 #+begin_src emacs-lisp
+(use-package nerd-icons :defer t)
+(use-package nerd-icons-dired
+    :defer t
+    :hook
+    (dired-mode . nerd-icons-dired-mode))
+(use-package nerd-icons-completion
+    :defer t
+    :config
+    (nerd-icons-completion-mode))
+#+end_src
+
+*** Ligature package
+
+#+begin_src emacs-lisp
+(use-package ligature
+  :config
+ ;; Enable the "www" ligature in every possible major mode
+  (ligature-set-ligatures 't '("www"))
+  ;; Enable traditional ligature support in eww-mode, if the
+  ;; `variable-pitch' face supports it
+  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+  ;; Enable all Cascadia Code ligatures in programming modes
+  (ligature-set-ligatures '(prog-mode org-mode) lem/ligatures-prog-mode-list)
+  ;; (ligature-set-ligatures 't lem/ligatures-extra-symbols)
+ (global-ligature-mode t))
+#+end_src
+
+*** Functions to set up the fonts
+#+begin_src emacs-lisp :tangle no :noweb-ref group-functions
 (defun lem/set--fonts ()
   "Function to setup the fonts once the frame is create.
 This is required when using the daemon mode"
@@ -849,7 +1104,7 @@ Defining the various fonts that Emacs will use.
 (add-to-list 'default-frame-alist '(family . lem-default))
 #+end_src
 
-*** Ligatures
+*** Customize ligatures
 
 #+begin_src emacs-lisp
 (defvar lem/ligatures-prog-mode-list
@@ -866,33 +1121,28 @@ Defining the various fonts that Emacs will use.
     "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
     "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
     "\\\\" "://"))
-
-(use-package ligature
-  :config
- ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  ;; Enable all Cascadia Code ligatures in programming modes
-  (ligature-set-ligatures '(prog-mode org-mode) lem/ligatures-prog-mode-list)
-  ;; (ligature-set-ligatures 't lem/ligatures-extra-symbols)
- (global-ligature-mode t))
 #+end_src
-*** Setup icons
 
-This is an icon set that can be used with dashboard, dired, ibuffer and other Emacs programs.
+*** create frame hook
+
+Emacs in daemon mode has a problem loading the fonts. By default, the init file
+is not read until the first frame is loaded, so the changes on the ui should be
+done after it.
+
+Emacs has some ~hooks~ like the ~after-make-frame-functions~, which allows us to
+call a function after a frame is created. This function receive as argument the
+current frame
 
 #+begin_src emacs-lisp
-(use-package nerd-icons :defer t)
-(use-package nerd-icons-dired
-    :defer t
-    :hook
-    (dired-mode . nerd-icons-dired-mode))
-(use-package nerd-icons-completion
-    :defer t
-    :config
-    (nerd-icons-completion-mode))
+(if (daemonp)
+    (add-hook 'after-make-frame-functions
+              (lambda (frame)
+                (lem/set-fonts frame)
+                (lem/set-background frame)))
+  (add-hook 'after-init-hook
+            (lambda ()
+              (lem/set--fonts)
+              (lem/set-background))))
 #+end_src
 
 ** Global theme
@@ -932,7 +1182,7 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 
 ** Highlights
 
-#+begin_src emacs-lisp :noweb-ref require :tangle no
+#+begin_src emacs-lisp
 (require 'hl-line)
 #+end_src
 
@@ -961,12 +1211,47 @@ This is an icon set that can be used with dashboard, dired, ibuffer and other Em
 #+end_src
 
 ** END OF THEMING                                                       :END:
-#+begin_src emacs-lisp :tangle no
-(provide 'lem-theme)
+#+begin_src emacs-lisp
+(provide 'init-theme)
+;;; init-theme.el ends here
 #+end_src
 
+#+begin_src emacs-lisp
+(require 'init-theme)
+#+end_src
+
+** TODO Electric
 #+begin_src emacs-lisp :tangle no
-(require 'lem-theme)
+(electric-indent-mode -1)
+(electric-pair-mode -1)
+#+end_src
+
+* Dashboard
+
+Emacs Dashboard is an extensible startup screen showing you recent files, bookmarks, agenda items and an Emacs banner.
+
+#+begin_src emacs-lisp
+(use-package dashboard
+  :disabled
+  :diminish (dashboard-mode)
+  :init      ;; tweak dashboard config before loading it
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))
+        dashboard-banner-logo-title "Welcome to Emacs!"
+        dashboard-set-navigator t
+        dashboard-set-heading-icons t
+        dashboard-set-file-icons t
+        dashboard-startup-banner 'logo
+        dashboard-center-content nil
+        dashboard-items '((recents   . 5)
+                          (agenda    . 5 )
+                          (projects  . 5))
+        dashboard-display-icons-p t ;; display icons on both GUI and terminal
+        dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
+  :config
+  (dashboard-setup-startup-hook)
+  :custom
+  (dashboard-modify-heading-icons '((recents . "file-text")
+                                    (bookmarks . "book"))))
 #+end_src
 
 * Keyboard binding
