@@ -1,4 +1,4 @@
-;;; init-consts.el --- setup default consts -*- lexical-binding: t -*-
+;;; init-consts.el --- setup package -*- lexical-binding: t -*-
 ;; This file is not part of GNU Emacs
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -38,9 +38,6 @@
 (defconst is-fedora
   (string= (system-name) "fedora-laptop")
   "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
-
-(defvar user-name nil
-  "The name to be used in message.")
 ;; -MachineInfo
 
 ;; UserInfo
@@ -51,7 +48,7 @@
   user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
   user-full-name (string-trim (shell-command-to-string "git config --global user.name"))
   user-name (getenv "USER"))
-;; -userInfo
+;; -UserInfo
 
 ;; Consts
 (defconst lem/dotfiles "~/Documents/git/dotfiles/"
@@ -68,7 +65,7 @@
       (and (executable-find "pip")
            (> (length (shell-command-to-string "pip --version | grep 'python 3'")) 0)))
   "Do we have pip3?")
-;; -Consts
+;; Consts
 
 (provide 'init-consts)
 ;;; init-consts.el ends here

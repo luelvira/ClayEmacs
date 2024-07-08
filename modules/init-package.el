@@ -1,11 +1,7 @@
-;;; init-package.el --- boostrap straight            -*- lexical-binding: t; -*-
+;;; init-package.el --- setup package -*- lexical-binding: t -*-
+;; This file is not part of GNU Emacs
 
-;; Copyright (C) 2024  Lucas Elvira Martin
-
-;; Author: Lucas Elvira Martin <lucas@debian>
-;; Keywords: 
-
-;; This program is free software; you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
@@ -18,15 +14,17 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 ;;; Commentary:
 
-;; 
+;; This file has been automatically generated. DO NOT EDIT.
+;; Sources are available from https://github.com/luelvira/dotfiles/
 
 ;;; Code:
 
 (if (eq system-type 'gnu/linux)
-    ;; Straight
     (progn
+      ;; Straight
       (setq straight-check-for-modifications nil)
       (defvar bootstrap-version)
       (let ((bootstrap-file
@@ -43,37 +41,39 @@
             (goto-char (point-max))
             (eval-print-last-sexp)))
         (load bootstrap-file nil 'nomessage))
-
+      
       ;; Use straight by default
       (straight-use-package 'use-package)
-      (setq straight-use-package-by-default t))
-  ;; -Straight
-
+      (setq straight-use-package-by-default t
+            use-package-always-ensure nil)
+      ;; -Straight
+      )
   (progn
     ;; DefaultPackageManagement
     (setq package-user-dir (expand-file-name "elpa" user-emacs-directory)
           package-archives
           '(("gnu" . "https://elpa.gnu.org/packages/")
-            ("melpa" . "https://melpa.org/packages/")))
+            ("melpa" . "https://melpa.org/packages/")
+            ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
     ;; -DefaultPackageManagement
+    
     ;; UsePackage
     ;; Install use-package if not installed
     (unless (package-installed-p 'use-package)
       (package-refresh-contents)
       (package-install 'use-package))
-
+    
     (eval-and-compile
       (setq use-package-always-ensure t)
       (setq use-package-expand-minimally t)
       (setq use-package-compute-statistics t)
       (setq use-package-enable-imenu-support t))
-
+    
     (eval-when-compile
       (require 'use-package)
       (require 'bind-key))
     ;; -UsePackage
-    ))
-
-
+    )
+)
 (provide 'init-package)
 ;;; init-package.el ends here

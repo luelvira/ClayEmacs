@@ -1,11 +1,7 @@
-;;; early-init.el --- early init file                -*- lexical-binding: t; -*-
+;;; early-init.el --- early init file -*- lexical-binding: t -*-
+;; This file is not part of GNU Emacs
 
-;; Copyright (C) 2024  Lucas Elvira Martin
-
-;; Author: Lucas Elvira Martin <lucas@debian>
-;; Keywords: 
-
-;; This program is free software; you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
@@ -18,9 +14,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+
 ;;; Commentary:
 
-;; This file is the first file load with Emacs > 27
+;; This file has been automatically generated. DO NOT EDIT.
+;; Sources are available from https://github.com/luelvira/dotfiles/
 
 ;;; Code:
 
@@ -37,13 +35,13 @@
 (setq package-enable-at-startup nil)
 ;; -DisablePackage
 
-;; SpeedUp
+;; DefferGC
 (setq site-run-file nil                  ; No site-wide run-time initializations.
       inhibit-default-init t             ; No site-wide default library
       gc-cons-threshold (* 50 1024 1024) ; The default is 800 kilobytes. Measured in bytes.
       gc-cons-percentage 0.2
       native-comp-eln-load-path (list (expand-file-name "eln-cache" user-emacs-directory)))
-;; -SpeedUp
+;; -DefferGC
 
 ;; FilenameHandler
 (defvar file-name-handler-alist-original file-name-handler-alist)

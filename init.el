@@ -1,9 +1,9 @@
-;;; init.el --- inti file for my custom configuration  -*- lexical-binding: t; -*-
+;;; init.el --- init file                            -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024  Lucas Elvira Martin
+;; Copyright (C) 2024  Lucas Elvira Martín
 
-;; Author: Lucas Elvira Martin <lucas@debian>
-;; Keywords:
+;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
+;; Keywords: Emacs, Lisp, configuration
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,21 +20,21 @@
 
 ;;; Commentary:
 
-;; This is the init file for my own configuration
+;; This file is the entry point of clayemacs
 
 ;;; Code:
-;; BetterGc
+;; BetterGC
+;; Profile emacs startup
 (add-hook 'emacs-startup-hook
-  (lambda ()
-    (setq gc-cons-threshold (* 2 1024 1024)
-          file-name-handler-alist file-name-handler-alist-original)
-    (makunbound 'file-name-handler-alist-original)
-      (message "*** Emacs loaded in %s seconds with %d garbage collections."
-        (emacs-init-time "%.2f") gcs-done)))
-;; -BetterGc
+          (lambda ()
+            (setq gc-cons-threshold (* 2 1024 1024)
+                  file-name-handler-alist file-name-handler-alist-original)
+            (makunbound 'file-name-handler-alist-original)
+            (message "*** Emacs loaded in %s seconds with %d garbage collections."
+                     (emacs-init-time "%.2f") gcs-done)))
+;; -BetterGC
 
-
-;; LoadPath
+;; UpdatePath
 (defun update-to-load-path (folder)
   "Update FOLDER and its subdirectories to `load-path'."
   (let ((base folder))
@@ -49,11 +49,10 @@
             (add-to-list 'load-path name)))))))
 
 (update-to-load-path (expand-file-name "modules" private-emacs-directory))
-;; -LoadPath
+;; -UpdatePath
 
-(require 'init-consts)
-(require 'init-package)
-(require 'general-config)
+(require 'clayemacs)
+
 
 (provide 'init)
 ;;; init.el ends here
