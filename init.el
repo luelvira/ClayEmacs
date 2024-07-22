@@ -40,19 +40,24 @@
   (let ((base folder))
     (unless (member base load-path)
       (add-to-list 'load-path base))
-    (dolist (f (directory-files base))
+    (dolist (f (directory-files folder))
       (let ((name (concat base "/" f)))
         (when (and (file-directory-p name)
                    (not (equal f ".."))
                    (not (equal f ".")))
-          (unless (member base load-path)
-            (add-to-list 'load-path name)))))))
+          (update-to-load-path name))))))
 
 (update-to-load-path (expand-file-name "modules" private-emacs-directory))
 ;; -UpdatePath
 
-(require 'clayemacs)
 
+
+;; InitRequire
+(require 'init-package)
+(require 'init-consts)
+;; -InitRequire
+(require 'clayemacs)
+(require 'clay-develop)
 
 (provide 'init)
 ;;; init.el ends here

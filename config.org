@@ -12,6 +12,19 @@
 #+TAGS: INACTIVE(i) TOC(t)
 #+auto_tangle: nil
 #+EXPORT_FILE_NAME: README
+#+options: ':nil *:t -:t ::t <:t H:3 \n:nil ^:t arch:headline author:t
+#+options: broken-links:nil c:nil creator:nil d:(not "LOGBOOK") date:t e:t
+#+options: email:nil expand-links:t f:t inline:t num:t p:nil pri:nil prop:nil
+#+options: stat:t tags:t tasks:t tex:t timestamp:t title:t toc:t todo:t |:t
+#+title: config
+#+date: <2024-07-10 Wed>
+#+author: Lucas Elvira Martín
+#+email: lucaselvira96@gmail.com
+#+language: en
+#+select_tags: export
+#+exclude_tags: noexport
+#+creator: Emacs 29.3 (Org mode 9.7-pre)
+#+cite_export:
 
 * ClayEMACS
 
@@ -186,187 +199,64 @@ Add the lisp script to the path
 
 ** Load our modules
 After add the custom path, it is necessary to load the correspondent modules
-#+begin_src emacs-lisp
-;; InitRequire
-<<init-require>>
-;; -InitRequire
-#+end_src
+
+#+INCLUDE: "init.el" src emacs-lisp :range-begin "InitRequire" :range-end "-InitRequire" :lines "57-59"
 
 ** Package system
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle "modules/init-package.el"
-:HEADER-ARGS:emacs-lisp+: :shebang ;;; init-package.el --- setup package -*- lexical-binding: t -*-
-:END:
-
-#+begin_src emacs-lisp
-<<header>>
-#+end_src
 
 For package management I combine ~use-package~ with [[https://github.com/radian-software/straight.el][straight]]. To boot the process,
 I will disable the checking step that ensure the system has the newest version
 of each package.
 
-#+begin_src emacs-lisp :tangle no :noweb-ref straight
-;; Straight
-(setq straight-check-for-modifications nil)
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name
-        "straight/repos/straight.el/bootstrap.el"
-        (or (bound-and-true-p straight-base-dir)
-            user-emacs-directory)))
-      (bootstrap-version 7))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-;; Use straight by default
-(straight-use-package 'use-package)
-(setq straight-use-package-by-default t
-      use-package-always-ensure nil)
-;; -Straight
-#+end_src
+#+INCLUDE: "modules/init-package.el" src emacs-lisp :range-begin "Straight" :range-end "-Straight" :lines "28-49"
 
 In systems different to Linux, I don't use straight, I prefer to use the default
 one system.
 
-#+begin_src emacs-lisp :tangle no :noweb-ref DefaultPackageManagement
-;; DefaultPackageManagement
-(setq package-user-dir (expand-file-name "elpa" user-emacs-directory)
-      package-archives
-      '(("gnu" . "https://elpa.gnu.org/packages/")
-        ("melpa" . "https://melpa.org/packages/")
-        ("nongnu" . "https://elpa.nongnu.org/nongnu/")))
-;; -DefaultPackageManagement
-#+end_src
+#+INCLUDE: "modules/init-package.el" src emacs-lisp :range-begin "DefaultpackageManagement" :range-end "-DefaultpackageManagement" :lines "53-58"
 
 When Emacs uses the default package manager, it is needed to install ~use-package~
 
-#+begin_src emacs-lisp :tangle no :noweb-ref UsePackage
+#+NAME: UsePackage
+#+INCLUDE: "modules/init-package.el" src emacs-lisp :range-begin "UsePackage" :range-end "UsePackage" :lines "61-75"
 
-;; UsePackage
-;; Install use-package if not installed
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
-(eval-and-compile
-  (setq use-package-always-ensure t)
-  (setq use-package-expand-minimally t)
-  (setq use-package-compute-statistics t)
-  (setq use-package-enable-imenu-support t))
-
-(eval-when-compile
-  (require 'use-package)
-  (require 'bind-key))
-;; -UsePackage
-#+end_src
-
-Gutter all and export the package
+Gutter all and export the package. I used to us the ~noweb~ method in order to
+setup the different parts. In this case, I am including the different parts from
+code, so I will simulate it.
 
 #+begin_src emacs-lisp
 (if (eq system-type 'gnu/linux)
     (progn
+      ;; Copy the straight part
       <<straight>>
       )
   (progn
+    ;; Copy the DefaultpackageManagement part
     <<DefaultPackageManagement>>
+    ;; Copy the UsePackage part
     <<UsePackage>>
     )
 )
-(provide 'init-package)
-;;; init-package.el ends here
-#+end_src
-
-#+begin_src emacs-lisp :tangle no :noweb-ref init-require
-(require 'init-package)
 #+end_src
 
 ** Define constants
-:PROPERTIES:
-:HEADER-ARGS:emacs-lisp+: :tangle "modules/init-consts.el"
-:HEADER-ARGS:emacs-lisp+: :shebang ;;; init-consts.el --- setup package -*- lexical-binding: t -*-
-:END:
-
-#+begin_src emacs-lisp
-<<header>>
-#+end_src
 
 *** Get environment variables
 
 This part aims to setting some special configuration based on the system Emacs is running
 
-#+begin_src emacs-lisp
-;; MachineInfo
-(defconst is-termux
-  (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-  "Boolean variable to determinate if Emacs is runing into termux system.")
-
-(defconst is-ubuntu
-  (string= (system-name) "HP-Z1-G8")
-  "Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
-
-(defconst is-debian
-  (string= (system-name) "debian")
-  "Boolean variable to determinate if Emacs is runing on home's debian machine.")
-
-(defconst is-fedora
-  (string= (system-name) "fedora-laptop")
-  "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
-;; -MachineInfo
-#+end_src
+#+INCLUDE: "modules/init-consts.el" :range-begin "MachineInfo" :range-end "-MachineInfo" :lines "26-41"
 
 *** Get User info
 
 *Note* I use the git configuration to get this values, but you are free to
 customize them.
 
-#+begin_src emacs-lisp
-;; UserInfo
-(defvar user-name nil
-  "The name to be used in message.")
-
-(setq
-  user-mail-address (string-trim (shell-command-to-string "git config --global user.email"))
-  user-full-name (string-trim (shell-command-to-string "git config --global user.name"))
-  user-name (getenv "USER"))
-;; -UserInfo
-#+end_src
+#+INCLUDE: "modules/init-consts.el" :range-begin "UserInfo" :range-end "-UserInfo"  :lines "44-51"
 
 *** Runtime constants
 
-#+begin_src emacs-lisp
-;; Consts
-(defconst lem/dotfiles "~/Documents/git/dotfiles/"
-  "The path where the dotfiles git repo is stored.")
-
-(defconst python-p
-  (or (executable-find "python3")
-      (and (executable-find "python")
-           (> (length (shell-command-to-string "python --version | grep 'Python 3'")) 0)))
-  "Do we have python3?")
-
-(defconst pip-p
-  (or (executable-find "pip3")
-      (and (executable-find "pip")
-           (> (length (shell-command-to-string "pip --version | grep 'python 3'")) 0)))
-  "Do we have pip3?")
-;; Consts
-#+end_src
-
-#+begin_src emacs-lisp
-(provide 'init-consts)
-;;; init-consts.el ends here
-#+end_src
-
-#+begin_src emacs-lisp :tangle no :noweb-ref init-require
-(require 'init-consts)
-#+end_src
+#+INCLUDE: "modules/init-consts.el" :range-begin "Consts" :range-end "-Consts"  :lines "2-70"
 
 * Dashboard
 

@@ -25,10 +25,6 @@
 (require 'savehist)
 (require 'hl-line)
 
-;; InitRequire
-(require 'init-package)
-(require 'init-consts)
-;; -InitRequire
 
 (use-package dashboard
   :disabled
@@ -190,6 +186,7 @@
   :type '(number))
 
 (defun lem/set-background ( &optional frame)
+  "The default value of transparency used for the current FRAME."
   (unless is-termux
     (let ((alpha (if (boundp 'lem/alpha-value) lem/alpha-value 100)))
       (let ((tuple `(,alpha . ,alpha)))
@@ -1053,11 +1050,6 @@ Enable it only for the most braves :;"
   :diminish
   :init (global-flycheck-mode))
 
-(use-package origami
-  :hook (prog-mode . origami-mode))
-
-(use-package subword
-  :config (global-subword-mode 1))
 
 (use-package compile
   :straight nil
@@ -1095,124 +1087,26 @@ Enable it only for the most braves :;"
 (use-package flycheck-eglot
   :hook (eglot-managment-mode .flycheck-eglot-mode))
 
-(use-package python-mode
-  :init
-  (setq python-indent-guess-indent-offset t
-        python-indent-guess-indent-offset-verbose nil
-        python-shell-interpreter "python3"))
+(defvar clay-python? t
+  "Set true to load the python configuration.")
 
-(use-package pyvenv
-  :init (setenv "WORKON_HOME" "~/.pyenv/versions")
-  :config
-  (pyvenv-mode 1)
-  (add-hook 'python-mode-local-vars-hook #'pyvenv-track-virtualenv)
-  (add-to-list 'global-mode-string
-               '(pyvenv-virtual-env-name (" venv:" pyvenv-virtual-env-name " "))
-               'append))
+(defvar clay-web? t
+  "Set true to load the configuration used in web development.")
+(defvar clay-ts? nil
+  "Set the var to true to load the configuration for typescript file.")
+(defvar clay-react? nil
+  "Set the var to true to load the configuration for react files.")
+(defvar clay-haskell? t
+  "Set the var to true to load the configuration for haskell projects.")
 
-(use-package lsp-pyright :ensure t)
-
-(defun lem/js-indentation ()
-  "setup the default indent for javascript files."
-  (setq js-chain-indent t
-        ;; These have become standard in the JS community
-        js-indent-level lem/js-indentation-value
-        js2-basic-offset js-indent-level
-        typescript-indent-level js-indent-level
-        evil-shift-width js-indent-level
-        tab-width js-indent-level))
-
-(defcustom lem/js-indentation-value 2
-  "The default value for indent javascript and typescript files."
-  :set (lambda (k v) (set-default k v) (lem/js-indentation))
-  :group 'lem
-  :type 'number)
-
-(use-package js2-mode
-  :mode "\\.jsx?\\'"
-  :ensure flycheck
-  :hook ((js2-mode . js2-imenu-extras-mode)
-         (js2-mode . prettier-js-mode)
-         (js2-mode . lem/js-indentation))
-  :config
-  (setq 
-   ;; let flycheck handle this
-   js2-mode-show-parse-errors nil
-   js2-mode-show-strict-warnings nil
-   ;; Flycheck provides these features, so disable them: conflicting with
-   ;; the eslint settings.
-   js2-strict-missing-semi-warning nil)
-   ;; Use js2-mode for Node scripts
-   (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode)))
-
-(use-package prettier-js
-  :custom (prettier-js-args '("--print-width" "100"
-                              "--single-quote" "true"
-                              "--trailing-comma" "all"))
-  :config
-  (setq prettier-js-show-errors nil))
-
-(use-package js2-refactor
-  :hook ((js2-mode rjsx-mode) . js2-refactor-mode))
-
-(use-package typescript-mode
-  :ensure flycheck
-  :hook ((typescript-mode . prettier-js-mode))
-  :mode ("\\.\\(ts\\|tsx\\)\\'")
-  :custom
-  ;; TSLint is depreciated in favor of ESLint.
-  (flycheck-disable-checker 'typescript-tslint)
-  (lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file" "/dev/stderr"))
-  (typescript-indent-level lem/js-indentation-value)
-  :config
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode))
-
-(use-package rjsx-mode)
-
-(defun lem/web-indentation ()
-  "Setup the indentation for the web mode."
-  (setq web-mode-markup-indent-offset lem/web-indentation-value ;; for html
-        web-mode-css-indent-offset    lem/web-indentation-value ;; for css
-        web-mode-code-indent-offset   lem/js-indentation-value  ;; for script/code
-        web-mode-enable-auto-pairing  t
-        web-mode-style-padding        lem/web-indentation-value
-        web-mode-script-padding       lem/js-indentation-value))
-
-(defcustom lem/web-indentation-value 2
-  "Default value of indentation for web mode.
-Default value is 2 following the standards."
-  :set (lambda (k v) (set-default k v) (lem/web-indentation))
-  :group 'lem
-  :type 'number)
-
-(use-package web-mode
-  :mode "(\\.html?"
-  :config
-  (lem/web-indentation))
-
-(use-package simple-httpd :defer t)
-(use-package impatient-mode :defer t)
-(use-package skewer-mode :defer t)
-
-(use-package rainbow-mode
-  :hook ((css-mode sass-mode) . rainbow-mode))
-(use-package sass-mode)
 
 (add-hook 'emacs-lisp-mode-hook  #'(lambda () (setq evil-shift-width 2)))
 
-(use-package clojure-mode)
-(use-package cider
-  :after clojure-mode)
-(use-package inf-clojure
-  :after cider)
-
-(use-package haskell-mode
-  :config
-  (setq haskell-process-suggest-remove-import-lines t
-        haskell-process-auto-import-loaded-modules t
-        haskell-process-show-overlays nil
-        haskell-process-type 'cabal-repl
-))
+;; (use-package clojure-mode)
+;; (use-package cider
+;;   :after clojure-mode)
+;; (use-package inf-clojure
+;;  :after cider)
 
 (use-package purescript-mode
   :config
@@ -1607,12 +1501,14 @@ Default value is 2 following the standards."
 
 (org-babel-do-load-languages
  'org-babel-load-languages
- '((emacs-lisp . t)
-   (python . t)
-   (js . t)
-   (shell . t)
-   (eshell . t)
-   (gnuplot . t)))
+ '((emacs-lisp  . t)
+   (python      . t)
+   (js          . t)
+   (shell       . t)
+   (eshell      . t)
+   (gnuplot     . t)
+   (haskell     . t)
+))
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
@@ -1626,6 +1522,7 @@ Default value is 2 following the standards."
 (add-to-list 'org-structure-template-alist '("js" . "src js"))
 (add-to-list 'org-structure-template-alist '("ex" . "export"))
 (add-to-list 'org-structure-template-alist '("html" . "src html"))
+(add-to-list 'org-structure-template-alist '("hs" . "src haskell"))
 
 (use-package org-superstar
   :after org
