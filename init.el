@@ -48,6 +48,7 @@
           (update-to-load-path name))))))
 
 (update-to-load-path (expand-file-name "modules" private-emacs-directory))
+(update-to-load-path (expand-file-name "lib" private-emacs-directory))
 ;; -UpdatePath
 
 
@@ -58,6 +59,8 @@
 ;; -InitRequire
 (require 'clayemacs)
 (require 'clay-develop)
+(require 'clay-keyboard)
+(require 'clay-write)
 
 (provide 'init)
 ;;; init.el ends here

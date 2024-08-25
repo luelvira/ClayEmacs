@@ -428,321 +428,6 @@ Then call the set--fonts function."
   (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
   (show-paren-mode 1))
 
-(global-set-key (kbd "C-M-u") 'universal-argument)
-
-(use-package undo-tree
-:init (global-undo-tree-mode 1)
-:config
-(setq undo-tree-auto-save-history nil))
-
-(defun rune/dont-arrow-me-bro ()
-  (interactive)
-  (message "Arrow keys are bad, you know?"))
-
-(use-package evil
-  :preface
-  (setq evil-ex-search-vim-style-regexp t
-        evil-ex-visual-char-range t  ; column range for ex commands
-        evil-mode-line-format 'nil
-        ;; more vim-like behavior
-        evil-symbol-word-search t
-        evil-ex-interactive-search-highlight 'selected-windowa)
-  :init
-  (setq evil-want-integration t
-        evil-want-keybinding nil
-        evil-want-C-u-scroll t
-        evil-want-C-i-jump t
-        evil-undo-system 'undo-tree
-        evil-respect-visual-line-mode t)
-  :config
-  (evil-mode 1)
-  ;; Set Emacs state modes
-  (dolist (mode '(custom-mode
-                  eshell-mode
-                  git-rebase-mode
-                  erc-mode
-                  circe-server-mode
-                  circe-chat-mode
-                  circe-query-mode
-                  term-mode))
-    (add-to-list 'evil-emacs-state-modes mode))
-  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
-  (define-key evil-insert-state-map (kbd "C-h") 'evil-delete-backward-char-and-join)
-  (evil-set-initial-state 'messages-buffer-mode 'normal)
-  (evil-set-initial-state 'dashboard-mode 'normal)
-  ;;; Disable arrow keys in insert mode
-  (unless is-termux
-    (define-key evil-visual-state-map (kbd "<left>")  'rune/dont-arrow-me-bro)
-    (define-key evil-visual-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
-    (define-key evil-visual-state-map (kbd "<down>")  'rune/dont-arrow-me-bro)
-    (define-key evil-visual-state-map (kbd "<up>")    'rune/dont-arrow-me-bro)
-    (define-key evil-normal-state-map (kbd "<left>")  'rune/dont-arrow-me-bro)
-    (define-key evil-normal-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
-    (define-key evil-normal-state-map (kbd "<down>")  'rune/dont-arrow-me-bro)
-    (define-key evil-normal-state-map (kbd "<up>")    'rune/dont-arrow-me-bro)
-    (define-key evil-insert-state-map (kbd "<left>")  'rune/dont-arrow-me-bro)
-    (define-key evil-insert-state-map (kbd "<right>") 'rune/dont-arrow-me-bro)
-    (define-key evil-insert-state-map (kbd "<down>")  'rune/dont-arrow-me-bro)
-    (define-key evil-insert-state-map (kbd "<up>")    'rune/dont-arrow-me-bro)))
-
-(use-package evil-collection
-  :after evil
-  :init
-  (setq evil-collection-company-use-tng nil)  ;; Is this a bug in evil-collection?
-  :custom
-  (evil-collection-outline-bind-tab-p nil)
-  :config
-  (evil-collection-init))
-
-(use-package evil-numbers
-  :after evil
-  :config
-  (define-key evil-normal-state-map (kbd "g +") 'evil-numbers/inc-at-pt)
-  (define-key evil-normal-state-map (kbd "g -") 'evil-numbers/dec-at-pt)
-  (define-key evil-visual-state-map (kbd "g +") 'evil-numbers/inc-at-pt-incremental)
-  (define-key evil-visual-state-map (kbd "g -") 'evil-numbers/dec-at-pt-incremental))
-
-(use-package evil-surround
-  :after evil
-  :config
-  (global-evil-surround-mode 1))
-
-(use-package evil-nerd-commenter
-  :after evil
-  :commands (evilnc-comment-operator
-             evilnc-inner-comment
-             evilnc-outer-commenter)
-  :bind ([remap comment-line] . evilnc-comment-or-uncomment-lines)
-  :config
-  (define-key evil-normal-state-map (kbd "C-S-/") 'evilnc-comment-or-uncomment-lines))
-
-(defun enable-evil-pro-mode ()
-  "Disable the arrow navigation"
-  (dolist (key '("<left>" "<right>" "<down>" "<up>"))
-    (define-key evil-visual-state-map (kbd key) 'rune/dont-arrow-me-bro)
-    (define-key evil-normal-state-map (kbd key) 'rune/dont-arrow-me-bro)
-    (define-key evil-insert-state-map (kbd key) 'rune/dont-arrow-me-bro)))
-
-(defun disable-evil-pro-mode ()
-   (define-key evil-normal-state-map (kbd "<left>")  'evil-backward-char)
-   (define-key evil-normal-state-map (kbd "<right>") 'evil-forward-char)
-   (define-key evil-normal-state-map (kbd "<up>")    'evil-previous-line)
-   (define-key evil-normal-state-map (kbd "<down>")  'evil-next-line))
-
-(define-minor-mode evil-pro-mode
-"Minor mode to enable or disable the navigation throw the arrows key.
-When the pro mode is enable, you can't navigate with these keys.
-Enable it only for the most braves :;"
-  :init-value nil
-  :lighter " evil-pro"
-  :interactive t
-  :group 'lem
-  (if evil-pro-mode
-      (enable-evil-pro-mode)
-    (disable-evil-pro-mode)))
-
-(use-package anzu)
-
-(use-package evil-anzu
-  :after evil
-  :config (global-anzu-mode +1))
-
-(use-package which-key
-  :defer t
-  :init (which-key-mode)
-  :diminish which-key-mode
-  :config
-  (setq which-key-idle-delay 0.3
-        which-key-side-window-location 'bottom
-        which-key-sort-order #'which-key-key-order-alpha
-        which-key-allow-imprecise-window-fit nil
-        which-key-sort-uppercase-first nil
-        which-key-add-column-padding 1
-        which-key-max-display-columns nil
-        which-key-min-display-lines 6
-        which-key-side-window-slot -10
-        which-key-side-window-max-height 0.25
-        which-key-max-description-length 25
-        which-key-allow-imprecise-window-fit nil
-        which-key-separator " → " ))
-
-(use-package general
-  :config
-  (general-evil-setup t)
-  (general-create-definer lem/leader-key-def
-    :keymaps '(normal insert visual emacs)
-    :prefix "SPC"
-    :global-prefix "C-SPC"))
-
-(lem/leader-key-def
-  "b" '(:ignore t        :which-key "buffers/bookmarks")
-  "bl" '(bookmark-jump   :which-key "List bookmarks")
-  "bm" '(bookmark-set    :which-key "Set bookmark")
-  "bd" '(bookmark-delete :which-key "Delete bookmark")
-  "bw" '(bookmark-save   :which-key "Save current bookmark to bookmark file")
-  "br" '(revert-buffer   :whick-key "Revert buffer")
-  "bi" '(switch-to-buffer     :which-key "Switch buffer")
-  "bk" '(kill-current-buffer  :whick-key "Kill current buffer")
-  "bn" '(next-buffer          :whick-key "Goto next buffer")
-  "bp" '(previous-buffer      :whick-key "Goto previous-buffer buffer")
-  "bs" '(save-buffer          :whick-key "Save current buffer")
-  "fD" '(lem/delete-this-file :which-key "Delete current file")
-  "fR" '(lem/rename-this-file :which-key "Rename current file")
-  "ER" '(lem/reload-init-file :which-key "Reload init file")
-  "e" '(:ignore t        :which-key "Eshell/Evaluate")
-  "eb" '(eval-buffer     :which-key "Evaluate elisp in buffer")
-  "ed" '(eval-defun      :which-key "Evaluate defun containing or after point")
-  "ee" '(eval-expression :which-key "Evaluate and elisp expression")
-  "el" '(eval-last-sexp  :which-key "Evaluate elisp expression before point")
-  "er" '(eval-region     :which-key "Evaluate elisp in region")
-  "fp" '(lem/go-dotfiles       :which-key "Config")
-  "fe" '(:ignore t             :which-key "Emacs files")
-  "fec" '(lem/go-emacs-config  :which-key "Emacs Config file")
-  "fei" '(lem/go-emacs-init    :which-key "Emacs init file")
-  "fem" '(lem/go-emacs-modules :which-key "Custom libraries")
-  "d"  '(:ignore t          :which-key "Dired")
-  "dd" '(dired              :which-key "Open dired")
-  "dj" '(dired-jump         :which-key "Dired jump to current")
-  "dp" '(lem/jump-dotfiles  :which-key "Go to dotfiles folder")
-  "f" '(:ignore t             :which-key "Files")
-  "fD" '(lem/delete-this-file :which-key "Delete current file")
-  "fd" '(find-grep-dired      :whick-key "Search for string in files in DIR")
-  "ff" '(find-file            :which-key "Find files")
-  "fr" '(recentf-open-files   :which-key "Recent files")
-  "fR" '(lem/rename-this-file :which-key "Rename current file")
-  "o"   '(:ignore t                                           :which-key "org mode")
-  "ol"  '(:ignore t                                           :which-key "Link")
-  "oli" '(org-insert-link                                     :which-key "insert link")
-  "ols" '(org-store-link                                      :which-key "store link")
-  "oN"  '(org-toggle-narrow-to-subtree                        :which-key "toggle narrow")
-  "os"  '(lem/org-search                                      :which-key "search notes")
-  "oa"  '(org-agenda                                          :which-key "Status")
-  "oc"  '(org-capture t                                       :which-key "Capture")
-  "oC"  '(:ignore t                                           :which-key "Org clock")
-  "oCe" '(org-set-effort                                      :which-key "Org set effort")
-  "oCg" '(org-clock-goto                                      :which-key "Go ot the last clock active")
-  "oCi" '(org-clock-in                                        :which-key "Clock in in the current task")
-  "oCI" '(org-clock-in-last                                   :which-key "Clock-in the last task")
-  "oCo" '(org-clock-out                                       :which-key "Clock-out current clock")
-  "on"  '((lambda () (interactive) (lem/interactive-find-file org-directory))        :which-key "Notes")
-  "op"  '(:ignore t                                           :which-key "Pomodoro")
-  "ops" '(org-pomodoro                                        :whick-key "Start org pomodoro")
-  "opt" '(set-pomodoro-timer                                  :which-key "Set pomodoro timer")
-  "ot"  '(:ignore t                                           :which-key "Insert time stamp")
-  "ots" '(org-time-stamp                                      :which-key "Insert active time stamp")
-  "oti" '(org-time-stamp-inactive                             :which-key "Insert inactive stamp")
-  "or"  '(:ignore t                       :which-key "Org roam")
-  "orI" '(org-roam-node-insert-immediate  :which-key "Roam insert immediately")
-  "orc" '(lem/org-roam-capture-task       :which-key "Roam capture tast")
-  "orf" '(org-roam-node-find              :whick-key "Org roam node find")
-  "org" '(org-roam-ui-open                :whick-key "Open org roam graph")
-  "ori" '(org-roam-node-insert            :whick-key "Org roam node insert")
-  "orl" '(org-roam-buffer-togle           :which-key "Org roam buffer togle")
-  "ort" '(:ignore t                       :which-key "Org roam tag")
-  "orta" '(org-roam-tag-add               :which-key "Org roam tag add")
-  "ortr" '(org-roam-tag-remove            :which-key "Org roam tag remove")
-  "ords" '(org-roam-db-sync               :which-key "Sync org roam db")
-  "p"  '(:ignore t                  :which-key "Projectile")
-  "pf" '(projectile-find-file       :which-key "Projectile find file")
-  "ps" '(projectile-switch-project  :which-key "Projectile switch project")
-  "pF" '(consult-ripgrep            :which-key "Rip grep")
-  "pc" '(projectile-compile-project :which-key "Compile Project")
-  "pd" '(projectile-dired           :which-key "Projectile dired")
-  "s" '(:ignore t      :which-key "sync")
-  "so" '(lem/sync-org  :which-key "Sync org files")
-  "sc" '(lem/sync-conf :which-key "Sync config folder")
-  "sb" '(org-roam-db-sync :whick-key "Reload org roam DB")
-  "t"  '(:ignore t                   :which-key "toggles")
-  "tw" '(whitespace-mode             :which-key "whitespace")
-  "td" '(lem-write-switch-dictionary :which-key "Toggle between dictionaries")
-  "tt" '(lem/toggle-transparency     :which-key "Toggle between transparency states")
-  "tl" '(org-toggle-link-display     :which-key "Toggle org link display")
-  "tL" '(display-line-numbers-mode   :which-key "Toggle display line numbers")
-  "tf" '(auto-fill-mode              :which-key "Toggle autofill mode")
-  "r" '(:ignore t :which-key "sudo edit")
-  "rf" '(sudo-edit-find-file :which-key "Sudo find file")
-  "rF" '(sudo=edit :which-key "sudo edit current file")
-  "u" '(universal-argument :which-key "Universal argument")
-  "v" '(:ignore t            :which-key "Vterminal")
-  "vt" '(multi-vterm         :which-key "Open vterm in same window")
-  "vT" '(vterm-other-window  :which-key "Open vterm in other window"))
-
-"d"  '(:ignore t          :which-key "Dired")
-"dd" '(dired              :which-key "Open dired")
-"dj" '(dired-jump         :which-key "Dired jump to current")
-"dp" '(lem/jump-dotfiles  :which-key "Go to dotfiles folder")
-
-"f" '(:ignore t             :which-key "Files")
-"fD" '(lem/delete-this-file :which-key "Delete current file")
-"fd" '(find-grep-dired      :whick-key "Search for string in files in DIR")
-"ff" '(find-file            :which-key "Find files")
-"fr" '(recentf-open-files   :which-key "Recent files")
-"fR" '(lem/rename-this-file :which-key "Rename current file")
-
-"o"   '(:ignore t                                           :which-key "org mode")
-"ol"  '(:ignore t                                           :which-key "Link")
-"oli" '(org-insert-link                                     :which-key "insert link")
-"ols" '(org-store-link                                      :which-key "store link")
-"oN"  '(org-toggle-narrow-to-subtree                        :which-key "toggle narrow")
-"os"  '(lem/org-search                                      :which-key "search notes")
-"oa"  '(org-agenda                                          :which-key "Status")
-"oc"  '(org-capture t                                       :which-key "Capture")
-"oC"  '(:ignore t                                           :which-key "Org clock")
-"oCe" '(org-set-effort                                      :which-key "Org set effort")
-"oCg" '(org-clock-goto                                      :which-key "Go ot the last clock active")
-"oCi" '(org-clock-in                                        :which-key "Clock in in the current task")
-"oCI" '(org-clock-in-last                                   :which-key "Clock-in the last task")
-"oCo" '(org-clock-out                                       :which-key "Clock-out current clock")
-"on"  '((lambda () (interactive) (lem/interactive-find-file org-directory))        :which-key "Notes")
-"op"  '(:ignore t                                           :which-key "Pomodoro")
-"ops" '(org-pomodoro                                        :whick-key "Start org pomodoro")
-"opt" '(set-pomodoro-timer                                  :which-key "Set pomodoro timer")
-"ot"  '(:ignore t                                           :which-key "Insert time stamp")
-"ots" '(org-time-stamp                                      :which-key "Insert active time stamp")
-"oti" '(org-time-stamp-inactive                             :which-key "Insert inactive stamp")
-
-"or"  '(:ignore t                       :which-key "Org roam")
-"orI" '(org-roam-node-insert-immediate  :which-key "Roam insert immediately")
-"orc" '(lem/org-roam-capture-task       :which-key "Roam capture tast")
-"orf" '(org-roam-node-find              :whick-key "Org roam node find")
-"org" '(org-roam-ui-open                :whick-key "Open org roam graph")
-"ori" '(org-roam-node-insert            :whick-key "Org roam node insert")
-"orl" '(org-roam-buffer-togle           :which-key "Org roam buffer togle")
-"ort" '(:ignore t                       :which-key "Org roam tag")
-"orta" '(org-roam-tag-add               :which-key "Org roam tag add")
-"ortr" '(org-roam-tag-remove            :which-key "Org roam tag remove")
-"ords" '(org-roam-db-sync               :which-key "Sync org roam db")
-
-"p"  '(:ignore t                  :which-key "Projectile")
-"pf" '(projectile-find-file       :which-key "Projectile find file")
-"ps" '(projectile-switch-project  :which-key "Projectile switch project")
-"pF" '(consult-ripgrep            :which-key "Rip grep")
-"pc" '(projectile-compile-project :which-key "Compile Project")
-"pd" '(projectile-dired           :which-key "Projectile dired")
-
-"s" '(:ignore t      :which-key "sync")
-"so" '(lem/sync-org  :which-key "Sync org files")
-"sc" '(lem/sync-conf :which-key "Sync config folder")
-"sb" '(org-roam-db-sync :whick-key "Reload org roam DB")
-
-"t"  '(:ignore t                   :which-key "toggles")
-"tw" '(whitespace-mode             :which-key "whitespace")
-"td" '(lem-write-switch-dictionary :which-key "Toggle between dictionaries")
-"tt" '(lem/toggle-transparency     :which-key "Toggle between transparency states")
-"tl" '(org-toggle-link-display     :which-key "Toggle org link display")
-"tL" '(display-line-numbers-mode   :which-key "Toggle display line numbers")
-"tf" '(auto-fill-mode              :which-key "Toggle autofill mode")
-
-"r" '(:ignore t :which-key "sudo edit")
-"rf" '(sudo-edit-find-file :which-key "Sudo find file")
-"rF" '(sudo=edit :which-key "sudo edit current file")
-
-"u" '(universal-argument :which-key "Universal argument")
-
-"v" '(:ignore t            :which-key "Vterminal")
-"vt" '(multi-vterm         :which-key "Open vterm in same window")
-"vT" '(vterm-other-window  :which-key "Open vterm in other window")
-
 (use-package perspective
   :custom
   (persp-mode-prefix-key (kbd "C-x x"))
@@ -1029,20 +714,6 @@ Enable it only for the most braves :;"
 
 (add-hook 'ediff-mode-hook 'dt-ediff-hook)
 
-(lem/leader-key-def
-  "g"   '(:ignore t :which-key "git")
-  "gs"  'magit-status
-  "gd"  'magit-diff-unstaged
-  "gc"  'magit-branch-or-checkout
-  "gl"   '(:ignore t :which-key "log")
-  "glc" 'magit-log-current
-  "glf" 'magit-log-buffer-file
-  "gb"  'magit-branch
-  "gP"  'magit-push-current
-  "gp"  'magit-pull-branch
-  "gf"  'magit-fetch
-  "gF"  'magit-fetch-all
-  "gr"  'magit-rebase)
 
 (use-package flycheck
   :straight t
@@ -1172,85 +843,12 @@ Enable it only for the most braves :;"
 :config
 (global-activity-watch-mode))
 
-(use-package visual-fill-column)
-
-(use-package auctex)
-(use-package cdlatex)
-
-(defgroup lem-write ()
-  "Lem group contains the default vars and function used in this module."
-  :group 'lem
-  :prefix "lem-write-")
-
-(defcustom lem-write-dictionaries-list '("en_US" "es_ES")
-  "List of dictionaries used for spell checking."
-  :type 'list
-  :group 'lem-write)
-
-(defcustom lem-write-langtool-p t
-  "Whether langtool should be used or not."
-  :type 'bool
-  :group 'lem-write)
-
-(defcustom lem-write-langtool-path "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
-  "Path where the langtool jar is stored."
-  :type 'string
-  :group 'lem-write
-  :set (lambda (k v)
-         (set-default k v)
-         (when (fboundp 'langtool-language-tool-jar) (setq langtool-language-tool-jar v))))
-
-(defvar lem-write-dictionaries-pos 0)
-
-(defmacro inc (var)
-  "Macro to increment VAR using modular arithmetic."
-  `(setq ,var (mod (+ 1 ,var) (length lem-write-dictionaries-list))))
-
-(defun lem-write-switch-dictionary ()
-  "Function to iterate over `lem-write-dictionaries-list'."
-  (interactive)
-  (let* ((dic ispell-current-dictionary)
-         (change (nth (inc lem-write-dictionaries-pos) lem-write-dictionaries-list)))
-    (ispell-change-dictionary change)
-    (message "Dictionary switched from %s to %s" dic change)))
-
-(defun lem-write-text-mode-setup ()
-  (interactive)
-  (setq evil-auto-indent nil)
-  (variable-pitch-mode 1)
-  (auto-fill-mode 1))
-
-(add-hook 'text-mode-hook 'lem-write-text-mode-setup)
-
-(use-package flyspell
-  :config
-  (when
-      (file-exists-p "/usr/bin/hunspell")
-    (setq ispell-program-name "hunspell"))
-  (setq ispell-current-dictionary (nth lem-write-dictionaries-pos lem-write-dictionaries-list))
-  :hook (text-mode . flyspell-mode)
-  :bind (("M-<f7>" . flyspell-buffer)
-         ("<f7>"   . flyspell-word)
-         ("C-;"    . flyspell-auto-correct-previous-word))
-  ("C-c n d" . lem-write-switch-dictionary))
-
-(when lem-write-langtool-p
-  (use-package langtool
-  :config
-  (setq langtool-language-tool-jar lem-write-langtool-path
-        langtool-default-language (nth lem-write-dictionaries-pos lem-write-dictionaries-list))))
-
-(use-package markdown-mode
-  :straight t
-  :mode ("\\.mdx?\\'" . gfm-mode)
-  :config
-  (setq markdown-command "marked"))
-
-(defun markdown-html (buffer)
-  (princ (with-current-buffer buffer
-           (format "<!DOCTYPE html><html><title>Impatient Markdown</title><xmp theme=\"united\" style=\"display:none;\"> %s  </xmp><script src=\"http://ndossougbe.github.io/strapdown/dist/strapdown.js\"></script></html>"
-                   (buffer-substring-no-properties (point-min) (point-max))))
-         (current-buffer)))
+(defvar clay-syntax? t
+  "Non-nil to load the syntax config.")
+(defvar clay-gmd? t
+  "Non-nil to load the markdown and  github markdown configuration.")
+(defvar clay-latex? t
+  "Non-nil to load the org-latex configuration.")
 
 (defun zen-mode--activate ()
   "Function to active a free distraction mode."
@@ -1287,82 +885,6 @@ Enable it only for the most braves :;"
       (zen-mode--activate)
     (zen-mode--disable)))
 
-(with-eval-after-load 'ox-latex
-  (setq org-cite-biblatex-options 
-        "backend=biber, style=ieee, isbn=false,sortcites, maxbibnames=5, minbibnames=1"
-        ;; delete unwanted file extensions after latexMK
-        org-latex-logfiles-extensions
-        (quote ("lof" "lot" "tex~" "aux" "idx" "log" "out" "toc" "nav" "snm" "vrb" "dvi" "fdb_latexmk" "blg" "brf" "fls" "entoc" "ps" "spl" "bbl" "xmpi" "run.xml" "bcf" "acn" "acr" "alg" "glg" "gls" "ist")))
-
-
-  (add-to-list 'org-latex-classes '("org-plain-latex"
-                                    "\\documentclass[11pt]{article}
-[NO-DEFAULT-PACKAGES]
-[NO-PACKAGES]
-\\renewcommand{\\baselinestretch}{1.15}
-\\parskip=6pt
-\\renewcommand{\\familydefault}{\\sfdefault}"
-                                    ("\\section{%s}" . "\\section*{%s}")
-                                    ("\\subsection{%s}" . "\\subsection*{%s}")
-                                    ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-                                    ("\\paragraph{%s}" . "\\paragraph*{%s}")
-                                    ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-  (add-to-list 'org-latex-classes '("altacv" "\\documentclass[10pt,a4paper,ragged2e,withhyper]{altacv}
-% Change the page layout if you need to
-\\geometry{left=1.25cm,right=1.25cm,top=1.5cm,bottom=1.5cm,columnsep=1.2cm}
-
-% Use roboto and lato for fonts
-\\renewcommand{\\familydefault}{\\sfdefault}
-
-% Change the colours if you want to
-\\definecolor{SlateGrey}{HTML}{2E2E2E}
-\\definecolor{LightGrey}{HTML}{666666}
-\\definecolor{DarkPastelRed}{HTML}{450808}
-\\definecolor{PastelRed}{HTML}{8F0D0D}
-\\definecolor{GoldenEarth}{HTML}{E7D192}
-\\colorlet{name}{black}
-\\colorlet{tagline}{PastelRed}
-\\colorlet{heading}{DarkPastelRed}
-\\colorlet{headingrule}{GoldenEarth}
-\\colorlet{subheading}{PastelRed}
-\\colorlet{accent}{PastelRed}
-\\colorlet{emphasis}{SlateGrey}
-\\colorlet{body}{LightGrey}
-
-% Change some fonts, if necessary
-\\renewcommand{\\namefont}{\\Huge\\rmfamily\\bfseries}
-\\renewcommand{\\personalinfofont}{\\footnotesize}
-\\renewcommand{\\cvsectionfont}{\\LARGE\\rmfamily\\bfseries}
-\\renewcommand{\\cvsubsectionfont}{\\large\\bfseries}
-
-% Change the bullets for itemize and rating marker
-% for \cvskill if you want to
-\\renewcommand{\\itemmarker}{{\\small\\textbullet}}
-\\renewcommand{\\ratingmarker}{\\faCircle}
-"
-
-                                    ("\\cvsection{%s}" . "\\cvsection*{%s}")))
-
-(add-to-list 'org-latex-classes '("moderncv"
-"\\documentclass{moderncv}
-\\usepackage[spanish]{babel}
-\\moderncvstyle{classic}
-\\moderncvcolor{green}
-\\renewcommand{\\familydefault}{\\sfdefault}
-\\usepackage[utf8]{inputenc}
-
-% Social icons
-\\social[linkedin]{lucas-elvira-martin}
-\\social[github]{luelvira}
-"))
-
-  (defun my-latex-filter-removeOrgAutoLabels (text backend info)
-    "Org-mode automatically generates labels for headings despite explicit use of `#+LABEL`. This filter forcibly removes all automatically generated org-labels in headings."
-    (when (org-export-derived-backend-p backend 'latex)
-      (replace-regexp-in-string "\\\\label{sec:org[a-f0-9]+}\n" "" text)))
-
-  (add-to-list 'org-export-filter-headline-functions
-               'my-latex-filter-removeOrgAutoLabels))
 
 (use-package toc-org
   :commands toc-org-enable
@@ -1406,15 +928,12 @@ Enable it only for the most braves :;"
         org-latex-create-formula-image-program 'dvisvgm
         org-link-frame-setup '((file . find-file)) ;; open file in the same window
         org-startup-folded 'showall ;; when emacs set as default the value showeverithing, overwrite custom visibilities
-        )
-
-(setq 
-  org-indirect-buffer-display 'current-window
-  org-enforce-todo-dependencies t
-  org-fontify-done-headline t
-  org-fontify-quote-and-verse-blocks t
-  org-fontify-whole-heading-line t
-  org-tags-columns 0)
+        org-indirect-buffer-display 'current-window
+        org-enforce-todo-dependencies t
+        org-fontify-done-headline t
+        org-fontify-quote-and-verse-blocks t
+        org-fontify-whole-heading-line t
+        org-tags-columns 0)
 
 (setq org-todo-keywords '((sequence "TODO(t)" "STRT(s)" "BACK(b)" "|" "DONE(d!)")
                           (sequence "|" "HOLD(h)" "CANCELED(c)")))
@@ -1568,9 +1087,7 @@ Enable it only for the most braves :;"
                  (file+olp+datetree
                   ,(expand-file-name "Journal.org" org-directory) "Notes")
                  "\n* %<%H:%m>\nFrom: %a\n%?" :empty-lines 1)
-                )))
-
-)
+                ))))
 
 (defun save-and-update-includes ()
   "Update the line numbers of #+INCLUDE:s in current buffer.
@@ -1698,8 +1215,6 @@ BEGIN and END are regexps which define the line range to use."
   (org-journal-file-format "%Y-%m-%d")
   (org-journal-enable-encryption nil)
   (org-journal-encrypt-journal nil))
-
-(use-package ox-gfm)
 
 (use-package org-roam
   :config
@@ -1875,6 +1390,8 @@ BEGIN and END are regexps which define the line range to use."
         denote-infer-keywords t
         denote-prompts '(title keywords signature)
         denote-dired-directories (list denote-directory)))
+
+
 
 (provide 'clayemacs)
 ;;; clayemacs.el ends here

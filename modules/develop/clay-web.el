@@ -123,7 +123,18 @@ Default value is 2 following the standards."
   :hook ((css-mode sass-mode) . rainbow-mode))
 (use-package sass-mode)
 
+(use-package emmet-mode)
 
+
+(use-package jshint-mode
+  :straight (jshint-mode :type git :host github :repo "daleharvey/jshint-mode")
+  :disabled t
+  :config
+  ;; jshint from https://github.com/daleharvey/jshint-mode
+  (add-to-list 'load-path "~/path/to/jshint-mode")
+    (require 'flymake-jshint)
+  (add-hook 'javascript-mode-hook
+            (lambda () (flymake-mode t))))
 
 (provide 'clay-web)
 ;;; clay-web.el ends here

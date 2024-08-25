@@ -195,12 +195,12 @@ setting and import the rest of the modules.
 ** Update load path
 
 Add the lisp script to the path
-#+INCLUDE: "init.el" src emacs-lisp :range-begin "UpdatePath" :range-end "-UpdatePath" :lines "38-52"
+#+INCLUDE: "init.el" src emacs-lisp :range-begin "UpdatePath" :range-end "-UpdatePath" :lines "38-51"
 
 ** Load our modules
 After add the custom path, it is necessary to load the correspondent modules
 
-#+INCLUDE: "init.el" src emacs-lisp :range-begin "InitRequire" :range-end "-InitRequire" :lines "57-59"
+#+INCLUDE: "init.el" src emacs-lisp :range-begin "InitRequire" :range-end "-InitRequire" :lines "56-58"
 
 ** Package system
 
@@ -2218,6 +2218,7 @@ you spend codding in the different projects you have.
 #+begin_src emacs-lisp :tangle no
 <<header>>
 #+end_src
+
 
 ** Install dependencies
 
