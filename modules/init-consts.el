@@ -65,6 +65,12 @@
       (and (executable-find "pip")
            (> (length (shell-command-to-string "pip --version | grep 'python 3'")) 0)))
   "Do we have pip3?")
+
+(defconst git-dir "~/Documents/git/"
+  "Path for the default git projects.")
+
+(defconst lem/website_folder (expand-file-name "web_site" git-dir)
+  "Path where I have the content of my personal web.")
 ;; Consts
 
 (provide 'init-consts)
