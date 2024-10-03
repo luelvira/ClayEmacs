@@ -658,15 +658,18 @@ ARG is the minibuffer text."
     (evil-define-key 'normal peep-dired-mode-map (kbd "C-j") 'peep-dired-next-file)
     (evil-define-key 'normal peep-dired-mode-map (kbd "C-k") 'peep-dired-prev-file))
 
+(use-package project :straight t) ;; There is an error with eglot and project https://emacs.stackexchange.com/a/81908
+
 (use-package projectile
+  :straight t
+  :ensure t
   :init
   (setq projectile-auto-discover nil
         projectile-globally-ignored-files '(".DS_Store" "TAGS")
         projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o")
         projectile-kill-buffers-filter 'kill-only-files)
   :diminish projectile-mode
-  :config (projectile-mode +1)
-  :demand t)
+  :config (projectile-mode +1))
 
 (use-package counsel-projectile
   :disabled
@@ -737,6 +740,7 @@ ARG is the minibuffer text."
     (add-hook 'after-save-hook #'recompile nil t)))
 
 (use-package eglot
+  :straight t
   :custom
   (eglot-autoshutdown t)
   (eglot-ignored-server-capabilities '(:documentHighlightProvider))
