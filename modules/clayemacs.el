@@ -904,7 +904,7 @@ ARG is the minibuffer text."
 
 (defconst lem/org-directory
   (concat (cond (is-debian "~/Sync/")
-                (is-fedora "~/Documents/")
+                (is-fedora "~/Sync/")
                 (is-termux "~/storage/shared/Documents/")) "Org/"))
 
 (defun lem/org-mode-hook ()
@@ -1388,7 +1388,7 @@ BEGIN and END are regexps which define the line range to use."
      (format
       "\\newacronym{%s}{%s}{%s}\n"
       label abbrv full)
-     nil "~/Documents/Org/roam/glossary.tex" 'append)))
+     nil "~/Sync/Org/roam/glossary.tex" 'append)))
 
 (use-package org-roam-ui)
 
