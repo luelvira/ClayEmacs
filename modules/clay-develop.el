@@ -36,7 +36,7 @@
 ;;; Install treesitter
 (use-package tree-sitter
       :mode (("\\.tsx\\'" . tsx-ts-mode)
-             ("\\.js\\'"  . typescript-ts-mode)
+             ("\\.js\\'"  . js-ts-mode)
              ("\\.mjs\\'" . typescript-ts-mode)
              ("\\.mts\\'" . typescript-ts-mode)
              ("\\.cjs\\'" . typescript-ts-mode)
@@ -88,7 +88,7 @@
                  (css-mode . css-ts-mode)
                  (typescript-mode . typescript-ts-mode)
                  (js-mode . typescript-ts-mode)
-                 (js2-mode . typescript-ts-mode)
+                 (js2-mode . js-ts-mode)
                  (c-mode . c-ts-mode)
                  (c++-mode . c++-ts-mode)
                  (c-or-c++-mode . c-or-c++-ts-mode)

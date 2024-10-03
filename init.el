@@ -61,6 +61,7 @@
 (require 'clay-develop)
 (require 'clay-keyboard)
 (require 'clay-write)
+(require 'clay-workflow)
 
 (provide 'init)
 ;;; init.el ends here

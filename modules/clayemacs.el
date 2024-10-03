@@ -429,21 +429,23 @@ Then call the set--fonts function."
   (show-paren-mode 1))
 
 (use-package perspective
+  :disabled
   :custom
   (persp-mode-prefix-key (kbd "C-x x"))
   :init (persp-mode)
   :config
-  (setq persp-state-default-file (expand-file-name "sessions" user-emacs-directory)))
-;; Use ibuffer with perspective
+  (setq
+   persp-state-default-file
+   (expand-file-name "sessions" user-emacs-directory))
 
-(add-hook
- 'ibuffer-hook (lambda ()
-                 (persp-ibuffer-set-filter-groups)
-                 (unless (eq ibuffer-sorting-mode 'alphabetic)
-                   (ibuffer-do-sort-by-alphabetic))))
-
-;; Automatically save perspective states to file when Emacs exits.
-(add-hook 'kill-emacs-hook #'persp-state-save)
+  ;; Use ibuffer with perspective
+  (add-hook
+   'ibuffer-hook (lambda ()
+                   (persp-ibuffer-set-filter-groups)
+                   (unless (eq ibuffer-sorting-mode 'alphabetic)
+                     (ibuffer-do-sort-by-alphabetic))))
+  ;; Automatically save perspective states to file when Emacs exits.
+  (add-hook 'kill-emacs-hook #'persp-state-save))
 
 (use-package cape
   :after corfu
@@ -491,8 +493,9 @@ Then call the set--fonts function."
   (global-corfu-mode))
 
 (defun lem/minibuffer-backward-kill (arg)
-  "When minibuffer is completing a file name delete up to parent
-  folder, otherwise delete a word"
+  "Minibuffer delete up to the parent folder or the last word.
+If the minibuffer text is a path, delete the filename, otherwise the last word.
+ARG is the minibuffer text."
   (interactive "p")
   (if minibuffer-completing-file-name
       ;; Borrowed from https://github.com/raxod502/selectrum/issues/498#issuecomment-803283608
@@ -655,15 +658,18 @@ Then call the set--fonts function."
     (evil-define-key 'normal peep-dired-mode-map (kbd "C-j") 'peep-dired-next-file)
     (evil-define-key 'normal peep-dired-mode-map (kbd "C-k") 'peep-dired-prev-file))
 
+(use-package project :straight t) ;; There is an error with eglot and project https://emacs.stackexchange.com/a/81908
+
 (use-package projectile
+  :straight t
+  :ensure t
   :init
   (setq projectile-auto-discover nil
         projectile-globally-ignored-files '(".DS_Store" "TAGS")
         projectile-globally-ignored-file-suffixes '(".elc" ".pyc" ".o")
         projectile-kill-buffers-filter 'kill-only-files)
   :diminish projectile-mode
-  :config (projectile-mode +1)
-  :demand t)
+  :config (projectile-mode +1))
 
 (use-package counsel-projectile
   :disabled
@@ -734,6 +740,7 @@ Then call the set--fonts function."
     (add-hook 'after-save-hook #'recompile nil t)))
 
 (use-package eglot
+  :straight t
   :custom
   (eglot-autoshutdown t)
   (eglot-ignored-server-capabilities '(:documentHighlightProvider))
@@ -849,6 +856,9 @@ Then call the set--fonts function."
   "Non-nil to load the markdown and  github markdown configuration.")
 (defvar clay-latex? t
   "Non-nil to load the org-latex configuration.")
+
+(defvar clay-publish? t
+  "Non-nil to load the publish configuration.")
 
 (defun zen-mode--activate ()
   "Function to active a free distraction mode."
@@ -1077,7 +1087,7 @@ Then call the set--fonts function."
               `(("m" "Fondos" table-line
                  (file+headline
                   ,(expand-file-name "Metrics.org" org-directory) "Fondos")
-                 "| %U | %^{fondo1} | %^{fondo2} |")
+                 "| %U | %^{MSCIEurope} | %^{S&P500} | %^{MSCIWorld} |")
                 ("j" "Journals")
                 ("jj" "Journal entry" entry
                  (file+olp+datetree
@@ -1346,9 +1356,7 @@ BEGIN and END are regexps which define the line range to use."
                :unnarrowed t) t)
 
 (setq citar-org-roam-note-title-template "${author} - ${title}"
-      citar-org-roam-capture-template-key "r")
-
-)
+      citar-org-roam-capture-template-key "r"))
 
 (defun lem/import-notes-from-zotero (key &optional _entry)
 (interactive (list (citar-select-ref)))

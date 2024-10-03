@@ -30,9 +30,9 @@ The module name is extracted from the function `buffer-file-name',
 and the `projectile-project-root'"
   (let* ((full-name (buffer-file-name))
         (name-from-project (replace-regexp-in-string
-                            (concat (projectile-project-root full-name) "src/")
+                            "\\(app/\\)\\|\\(src/\\)\\|\\(lib/\\)"
                             ""
-                            full-name)))
+                            (replace-regexp-in-string (projectile-project-root full-name) "" full-name))))
     (file-name-sans-extension
      (replace-regexp-in-string
       "/"

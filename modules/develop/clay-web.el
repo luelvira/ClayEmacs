@@ -94,7 +94,7 @@ Default value is 2 following the standards."
   :hook ((js2-mode rjsx-mode) . js2-refactor-mode))
 
 (use-package web-mode
-  :mode "(\\.html?"
+  :mode "(\\.htmlx?"
   :config
   (lem/web-indentation))
 

@@ -47,8 +47,12 @@
   (require 'clay-markdown))
 (when clay-latex?
   (require 'clay-latex))
+
 (use-package ox-hugo
   :after ox)
+
+(when clay-publish?
+  (require 'clay-publish))
 
 (defun lem-activate-ox-extra ()
   "Load the module ox-extra and activate it."
