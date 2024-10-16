@@ -123,7 +123,9 @@ Default value is 2 following the standards."
   :hook ((css-mode sass-mode) . rainbow-mode))
 (use-package sass-mode)
 
-(use-package emmet-mode)
+(use-package emmet-mode
+  :straight (emmet-mode :type git :host githun :repo "smihica/emmet-mode")
+  :hook (html-mode . emmet-mode))
 
 
 (use-package jshint-mode
@@ -135,6 +137,8 @@ Default value is 2 following the standards."
     (require 'flymake-jshint)
   (add-hook 'javascript-mode-hook
             (lambda () (flymake-mode t))))
+
+
 
 (provide 'clay-web)
 ;;; clay-web.el ends here

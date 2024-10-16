@@ -1,7 +1,0 @@
-(setq org-publish-cache (make-hash-table :test 'equal :weakness nil :size 100))
-(puthash ":project:" "blog" org-publish-cache)
-(puthash ":cache-file:" "/home/lucas/Documents/git/emacs-config/modules/clay-write/.org-cacheblog.cache" org-publish-cache)
-(puthash "/home/lucas/Sync/Org/roam/20240827165411-simple_calculator.org" '(:crossrefs nil) org-publish-cache)
-(puthash "X7a8e17db428d96a45bd7f08beb884256589da8f1" '(26345 35956 38766 48000) org-publish-cache)
-(puthash "/home/lucas/Sync/Org/roam/20240711170755-building_a_parser.org" '(:crossrefs nil) org-publish-cache)
-(puthash "X0885e2b504ad7d8b13d3a81338b54b0e8630185b" '(26345 35956 281862 51000) org-publish-cache)

@@ -30,7 +30,7 @@
         python-shell-interpreter "python3"))
 
 (use-package pyvenv
-  :init (setenv "WORKON_HOME" "~/.pyenv/versions")
+  :init (setenv "WORKON_HOME" "/home/lucas/.pyenv/versions")
   :config
   (pyvenv-mode 1)
   (add-hook 'python-mode-local-vars-hook #'pyvenv-track-virtualenv)
