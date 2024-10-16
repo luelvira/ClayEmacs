@@ -41,10 +41,11 @@
              ("\\.mts\\'" . typescript-ts-mode)
              ("\\.cjs\\'" . typescript-ts-mode)
              ("\\.ts\\'"  . typescript-ts-mode)
-             ("\\.jsx\\'" . tsx-ts-mode)
+             ("\\.jsx\\'" . jsx-ts-mode)
              ("\\.json\\'" .  json-ts-mode)
              ("\\.Dockerfile\\'" . dockerfile-ts-mode)
              ("\\.prisma\\'" . prisma-ts-mode)
+             ("\\.ya?ml\\'" . yaml-ts-mode)
              ;; More modes defined here...
              )
       :preface
@@ -102,6 +103,7 @@
       :config
       (os/setup-install-grammars))
 
+(use-package clojure-ts-mode)
 
 (when clay-python?
   (require 'clay-python))

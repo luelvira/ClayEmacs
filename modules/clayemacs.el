@@ -756,6 +756,8 @@ ARG is the minibuffer text."
         (web-mode . eglot-ensure)
         (typescript-mode . eglot-ensure)
         (js2-mode . eglot-ensure)
+        (typescript-ts-mode . eglot-ensure)
+        (tsx-ts-mode-mode . eglot-ensure)
         (haskell-mode . eglot-ensure))
   :commands (eglot eglot-ensure))
 
@@ -1291,6 +1293,7 @@ BEGIN and END are regexps which define the line range to use."
    nil
    (lambda (node)
      (member "Project" (org-roam-node-tags node)))))
+
 (defun org-roam-node-insert-immediate (arg &rest args)
   (interactive "P")
   (let ((args (push arg args))
@@ -1314,7 +1317,7 @@ BEGIN and END are regexps which define the line range to use."
                                                           ("Tasks"))
                                    :clock-in :clock-resume)
                                   ("m" "Meeting")
-                                  ("mp" "Prepare meeting" entry "** Notes\n %?"
+                                  ("mp" "Prepare meeting" entry "** %U\n %?"
                                    :if-new (file+head+olp "%<%Y%m%d%H%M%S>-${slug}.org"
                                                           "#+title: ${title}\n#+category: ${title}\n#+filetags: Project"
                                                           ("Meetings"))
