@@ -67,7 +67,7 @@ Default value is 2 following the standards."
 
 ;; Load the packages
 (use-package js2-mode
-  :mode "\\.jsx?\\'"
+  :mode (("\\.jsx?\\'" . js2-mode))
   :ensure flycheck
   :hook ((js2-mode . js2-imenu-extras-mode)
          (js2-mode . prettier-js-mode)
