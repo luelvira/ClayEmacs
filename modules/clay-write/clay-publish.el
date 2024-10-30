@@ -218,7 +218,7 @@ This function was take from ox-org."
     (setq org-publish-project-alist
           `(("org"
              :base-directory ,org-roam-directory
-             :publishing-directory ,(concat (plist-get clay--hugo-dirs 'hugo) "org_content/posts/")
+             :publishing-directory ,(concat (plist-get clay--hugo-dirs 'hugo) "/org_content/posts/")
              :recursive nil
              ;; exclude all files because only want the files that are in the filtered-files list
              :exclude "^.\*.org$"
