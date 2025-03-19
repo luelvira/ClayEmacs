@@ -792,6 +792,8 @@ ARG is the minibuffer text."
         (web-mode . eglot-ensure)
         (typescript-mode . eglot-ensure)
         (js2-mode . eglot-ensure)
+        (java-mode . eglot-ensure)
+        (java-ts-mode .  eglot-ensure)
         (typescript-ts-mode . eglot-ensure)
         (tsx-ts-mode-mode . eglot-ensure)
         (haskell-mode . eglot-ensure))
@@ -898,41 +900,41 @@ ARG is the minibuffer text."
 (defvar clay-publish? t
   "Non-nil to load the publish configuration.")
 
-;;(defun zen-mode--activate ()
-;;  "Function to active a free distraction mode."
-;;  (setq visual-fill-column-width 100
-;;        fill-column 80
-;;        visual-fill-column-center-text t
-;;        visual-fill-column-fringes-outside-margins t
-;;        display-line-numbers nil)
-;;  (auto-fill-mode -1)
-;;  (git-gutter-mode -1)
-;;  (visual-fill-column-mode 1))
-;;
-;;(defun zen-mode--disable ()
-;;  "Dsable the zen mode and restore the variables to the previous state."
-;;  (visual-fill-column-mode -1)
-;;  (auto-fill-mode 1)
-;;  (kill-local-variable 'visual-fill-column-width)
-;;  (kill-local-variable 'visual-fill-column-center-text)
-;;  (kill-local-variable 'visual-fill-column-fringes-outside-margins)
-;;  (kill-local-variable 'visual-fill-column-extra-text-width)
-;;  (setq display-line-numbers t))
-;;
-;;(defgroup zen ()
-;;  "Group for the zen mode variables."
-;;  :group 'lem-write
-;;  :prefix 'zen)
-;;
-;;(define-minor-mode zen-mode
-;;  "Toggles local zen-mode."
-;;  :initial nil
-;;  :global nil
-;;  :group 'zen-mode
-;;  (if zen-mode
-;;      (zen-mode--activate)
-;;    (zen-mode--disable)))
-;;
+(defun zen-mode--activate ()
+  "Function to active a free distraction mode."
+  (setq visual-fill-column-width 100
+        fill-column 80
+        visual-fill-column-center-text t
+        visual-fill-column-fringes-outside-margins t
+        display-line-numbers nil)
+  (auto-fill-mode -1)
+  (git-gutter-mode -1)
+  (visual-fill-column-mode 1))
+
+(defun zen-mode--disable ()
+  "Dsable the zen mode and restore the variables to the previous state."
+  (visual-fill-column-mode -1)
+  (auto-fill-mode 1)
+  (kill-local-variable 'visual-fill-column-width)
+  (kill-local-variable 'visual-fill-column-center-text)
+  (kill-local-variable 'visual-fill-column-fringes-outside-margins)
+  (kill-local-variable 'visual-fill-column-extra-text-width)
+  (setq display-line-numbers t))
+
+(defgroup zen ()
+  "Group for the zen mode variables."
+  :group 'lem-write
+  :prefix 'zen)
+
+(define-minor-mode zen-mode
+  "Toggles local zen-mode."
+  :initial nil
+  :global nil
+  :group 'zen-mode
+  (if zen-mode
+      (zen-mode--activate)
+    (zen-mode--disable)))
+
 
 (use-package toc-org
   :commands toc-org-enable

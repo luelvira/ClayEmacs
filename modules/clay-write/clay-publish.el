@@ -69,7 +69,6 @@ Those files have some of the SELECT-TAGS in the property FILETAGS."
           (push file filtered-files))))
     filtered-files))
 
-
 (defun clay-org-publish-to-org (plist filename pub-dir)
   "Replace `org-org-publish-to-org' function to set the custom backend.
 PLIST is a property list
@@ -81,25 +80,6 @@ PUB-DIR the directory where the project will be published."
                       plist
                       pub-dir))
 
-(org-export-define-derived-backend 'filter-org 'org
-  :options-alist '(
-                   (:bundle "BUNDLE" nil nil)
-                   (:language "LANGUAGE" nil "def")
-                   (:category "CATEGORY" nil "")
-                   (:with-bundle nil t "b" t)
-                   (:hugo-base-dir "BASE_DIR" "../../../" t)
-                   (:with-last-mod nil "lm" t)
-                   (:with-language nil t "lg" t)
-                   )
-  :filters-alist '((:filter-keyword  . my-keyword-function))
-  :translate-alist
-  '((template . clay--org-template)
-    (link . clay--org-link)
-    (paragraph . clay-org-identity)))
-
-(org-export-define-derived-backend 'my-hugo 'hugo
-  :translate-alist '(()))
-
 (defun my-keyword-function (keywordtext _back _info)
   "Filter the keywords based on `clay--hugo-ignore-keywords.
 If the KEYWORDTEXT matches with any of the elements from the list,
@@ -108,9 +88,8 @@ returns an empty string"
     (dolist (elem clay--hugo-ignore-keywords valid)
       (when (string-match-p elem keywordtext)
         (setq valid nil)))
-    (if valid
-        keywordtext
-      "no la quiero\n")))
+    (when valid
+        keywordtext)))
 
 (defun clay--org-link (link desc info)
   "Transcode LINK object into Org format.
@@ -136,8 +115,6 @@ INFO is a plist holding contextual information. See `org-export-data'."
          (value ""))
     (dolist (key (plist-get-keys attributes) value)
       (setq value (format "%s %s: %s" value key (plist-get attributes key))))))
-
-                          
 
 (defun clay-org-identity (blob contents _info)
   "Transcode BLOB element or object back into Org syntax.
@@ -236,9 +213,43 @@ This function was take from ox-org."
              :base-directory ,(concat (plist-get clay--hugo-dirs 'hugo) "org_content/")
              :publishing-directory ,(concat (plist-get clay--hugo-dirs 'hugo) "content/")
              :recursive t
-             :plublish-function clay--org-publish-to-hugo)))))
+             :plublish-function clay--org-publish-to-hugo)
+            ("phd"
+             :base-directory ,org-roam-directory
+             :publishing-directory "~/Documents/git/phd/notes/org_content/posts/"
+             :recursive nil
+             :include ,(filter-org-files-by-filetags org-roam-directory '("@UPM"))
+             :exclude "^.\*.org$"
+             :select-tags ("@UPM")
+             :publishing-function clay-org-publish-to-org
+             :time-stamp-file t
+             :with-creator nil
+             :with-tags nil
+             :auto-sitemap nil
+             :hugo-base-dir "../../")))))
+
+(org-export-define-derived-backend 'filter-org 'org
+  :options-alist '(
+                   (:bundle "BUNDLE" nil nil)
+                   (:language "LANGUAGE" nil "def")
+                   (:category "CATEGORY" nil "")
+                   (:with-bundle nil t "b" t)
+                   (:hugo-base-dir "BASE_DIR" "../../../" t)
+                   (:with-last-mod nil "lm" t)
+                   (:with-language nil t "lg" t)
+                   )
+  :filters-alist '((:filter-keyword  . my-keyword-function))
+  :translate-alist
+  '((template . clay--org-template)
+    (link . clay--org-link)
+    (paragraph . clay-org-identity)))
+
+(org-export-define-derived-backend 'my-hugo 'hugo
+  :translate-alist '(()))
 
 (clay--org-publish-project-filtered)
+
+
 
 
 (provide 'clay-publish)

@@ -46,6 +46,7 @@
              ("\\.Dockerfile\\'" . dockerfile-ts-mode)
              ("\\.prisma\\'" . prisma-ts-mode)
              ("\\.ya?ml\\'" . yaml-ts-mode)
+             ("\\.java\\'" . java-ts-mode)
              ;; More modes defined here...
              )
       :preface
@@ -56,6 +57,7 @@
                  '((css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
                    (bash "https://github.com/tree-sitter/tree-sitter-bash")
                    (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
+                   (java . ("https://github.com/tree-sitter/tree-sitter-java"))
                    (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.2" "src"))
                    (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.20.2"))
                    (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
@@ -77,7 +79,7 @@
           ;; installed. However, if you want to *update* a grammar then
           ;; this obviously prevents that from happening.
           (unless (treesit-language-available-p (car grammar))
-            (treesit-install-language-grammar (car grammar)))))
+              (treesit-install-language-grammar (car grammar)))))
 
       ;; Optional, but recommended. Tree-sitter enabled major modes are
       ;; distinct from their ordinary counterparts.
@@ -99,7 +101,8 @@
                  (json-mode . json-ts-mode)
                  (js-json-mode . json-ts-mode)
                  (sh-mode . bash-ts-mode)
-                 (sh-base-mode . bash-ts-mode)))
+                 (sh-base-mode . bash-ts-mode)
+                 (java-mode . java-ts-mode)))
         (add-to-list 'major-mode-remap-alist mapping))
       :config
       (os/setup-install-grammars))
@@ -114,6 +117,9 @@
 
 (when clay-haskell?
   (require 'clay-haskell))
+
+(when clay-java?
+  (require 'clay-java))
 
 (provide 'clay-develop)
 ;;; clay-develop.el ends here
