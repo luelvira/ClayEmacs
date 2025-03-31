@@ -343,7 +343,17 @@ This is required when using the daemon mode"
   (set-face-attribute 'variable-pitch nil
                       :family  lem-variable
                       :inherit 'default
-                      :weight 'regular))
+                      :weight 'regular)
+  (set-face-attribute 'line-number nil
+                      :family   lem-variable
+                      :inherit 'default
+                      :weight  'regular
+                      :slant 'normal)
+  (set-face-attribute 'line-number-current-line nil
+                      :family lem-variable
+                      :inherit 'default
+                      :weight 'regular
+                      :slant 'normal))
 
 (defun lem/set-fonts (frame)
   "Function to select the current FRAME when it is created.
@@ -816,6 +826,8 @@ ARG is the minibuffer text."
   "Set the var to true to load the configuration for react files.")
 (defvar clay-haskell? t
   "Set the var to true to load the configuration for haskell projects.")
+(defvar clay-java? nil
+  "Set the var to true to load the configuration for java files.")
 
 
 (add-hook 'emacs-lisp-mode-hook  #'(lambda () (setq evil-shift-width 2)))
