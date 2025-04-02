@@ -203,7 +203,8 @@
 (defun lem/sync (path)
   "Call the sync comand with the project to be syncrhonize.
 PATH: is the dir where the git repo is"
-  (shell-command-to-string (concat lem/sync_script_path " " path)))
+  (shell-command-to-string
+   (concat lem/sync_script_path " " path)))
 
 (defun lem/sync-org ()
   "Sync the Org directory with an external script."
@@ -214,6 +215,11 @@ PATH: is the dir where the git repo is"
   "Sync the config foler with an external script."
   (interactive)
   (lem/sync lem/dotfiles))
+
+(defun lem/sync-emacs ()
+  "Sync the emacs configuration."
+  (interactive)
+  (lem/sync lem/emacs-conf-directory))
 
 (defun lem/delete-this-file ()
   "Delete the current file and kill the buffer."
@@ -255,7 +261,7 @@ PATH: is the dir where the git repo is"
 (unless is-termux
   (tool-bar-mode    -1)
   (scroll-bar-mode  -1)
-  (set-fringe-mode   0)
+  (fringe-mode   nil)
   (tooltip-mode     -1)
   (menu-bar-mode    -1)
   (setq-default fringes-outside-margins t))
@@ -276,17 +282,21 @@ PATH: is the dir where the git repo is"
 
 (add-hook 'emacs-startup-hook #'window-divider-mode)
 
-(setq-default dispaly-line-numbers-width 3
-              display-line-numbers-widen t)
+(setq-default dispaly-line-numbers-width 0
+              display-line-numbers-widen nil)
 
 (dolist (mode '(text-mode-hook
                 prog-mode-hook
                 conf-mode-hook))
-  (add-hook mode (lambda () (display-line-numbers-mode 1))))
+  (add-hook mode (lambda ()
+                   (vi-tilde-fringe-mode)
+                   (display-line-numbers-mode 1))))
 
 (setq display-time-format "%H:%M %b %y"
       display-time-default-load-average nil)
 (display-time-mode 1)
+
+(use-package vi-tilde-fringe)
 
 (use-package doom-modeline
   :disabled
@@ -345,12 +355,12 @@ This is required when using the daemon mode"
                       :inherit 'default
                       :weight 'regular)
   (set-face-attribute 'line-number nil
-                      :family   lem-variable
+                      :family   lem-fixed
                       :inherit 'default
                       :weight  'regular
                       :slant 'normal)
   (set-face-attribute 'line-number-current-line nil
-                      :family lem-variable
+                      :family lem-fixed
                       :inherit 'default
                       :weight 'regular
                       :slant 'normal))

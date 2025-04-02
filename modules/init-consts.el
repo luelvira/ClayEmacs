@@ -54,6 +54,9 @@
 (defconst lem/dotfiles "~/Documents/git/dotfiles/"
   "The path where the dotfiles git repo is stored.")
 
+(defconst lem/emacs-conf-directory "~/Documents/git/emacs-config/"
+  "The path where the Emacs configuration is stored.")
+
 (defconst python-p
   (or (executable-find "python3")
       (and (executable-find "python")

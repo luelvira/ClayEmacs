@@ -110,6 +110,7 @@
   "s" '(:ignore t                                      :which-key "sync")
   "so" '(lem/sync-org                                  :which-key "Sync org files")
   "sc" '(lem/sync-conf                                 :which-key "Sync config folder")
+  "se" '(lem/sync-emacs                                :which-key "Sync emacs configuration")
   "sb" '(org-roam-db-sync                              :which-key "Reload org roam DB")
   "t"  '(:ignore t                                     :which-key "toggles")
   "tw" '(whitespace-mode                               :which-key "whitespace")
