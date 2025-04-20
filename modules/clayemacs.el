@@ -282,7 +282,7 @@ PATH: is the dir where the git repo is"
 
 (add-hook 'emacs-startup-hook #'window-divider-mode)
 
-(setq-default dispaly-line-numbers-width 0
+(setq-default dispaly-line-numbers-width 5
               display-line-numbers-widen nil)
 
 (dolist (mode '(text-mode-hook
@@ -812,8 +812,8 @@ ARG is the minibuffer text."
         (web-mode . eglot-ensure)
         (typescript-mode . eglot-ensure)
         (js2-mode . eglot-ensure)
-        (java-mode . eglot-ensure)
-        (java-ts-mode .  eglot-ensure)
+        ;(java-mode . eglot-ensure)
+        ;(java-ts-mode .  eglot-ensure)
         (typescript-ts-mode . eglot-ensure)
         (tsx-ts-mode-mode . eglot-ensure)
         (haskell-mode . eglot-ensure))
@@ -836,7 +836,7 @@ ARG is the minibuffer text."
   "Set the var to true to load the configuration for react files.")
 (defvar clay-haskell? t
   "Set the var to true to load the configuration for haskell projects.")
-(defvar clay-java? nil
+(defvar clay-java? t
   "Set the var to true to load the configuration for java files.")
 
 
@@ -994,7 +994,7 @@ ARG is the minibuffer text."
         org-src-preserve-indentation nil
         org-cycle-separator-lines 2
         org-refile-targets '((nil :maxlevel . 2)
-                             (org-agenda-files :maxlevel . 1))
+                             (org-agenda-files :maxlevel . 2))
         org-outline-path-complete-in-steps nil
         org-refile-use-outline-path t
         org-latex-create-formula-image-program 'dvisvgm
@@ -1038,7 +1038,8 @@ ARG is the minibuffer text."
 
 (setq org-agenda-files
       (mapcar (lambda (file)
-                (concat org-directory file)) '("Tasks.org" "Habits.org" "Projects.org"))
+                (concat org-directory file))
+              '("Tasks.org" "Habits.org" "Projects.org" "Agenda.org"))
       org-agenda-window-setup 'current-window
       org-agenda-span 'week
       org-agenda-start-with-log-mode t
@@ -1055,12 +1056,16 @@ ARG is the minibuffer text."
 
 (setq org-capture-templates
       `(("t" "Task")
-        ("tq" "Task Quick" entry
+        ("tq" "Quick Task" entry
          (file+headline ,(concat org-directory "Tasks.org") "Inbox")
          "* TODO %?\nAdded at: %U" :empty-lines 1)
         ("tl" "Task With link" entry
          (file+headline ,(concat org-directory "Tasks.org") "Inbox")
-         "* TODO %?\nAdded at: %U from %a\n" :empty-lines 1)))
+         "* TODO %?\nAdded at: %U from %a\n" :empty-lines 1)
+        ("m" "Meeting" entry (file+headline "Agenda.org" "Meetings")
+         "* %? :meeting:\nSCHEDULED: %^T")
+        ("n" "Note" entry (file "notes.org")
+         "* Note (%a)\n/Entered on/ %U\n\n%?")))
 
 (require 'org-habit)
 (add-to-list 'org-modules 'org-habit)
@@ -1098,8 +1103,7 @@ ARG is the minibuffer text."
    (shell       . t)
    (eshell      . t)
    (gnuplot     . t)
-   (haskell     . t)
-))
+   (haskell     . t)))
 
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 (org-babel-do-load-languages 'org-babel-load-languages org-babel-load-languages)
@@ -1159,8 +1163,26 @@ ARG is the minibuffer text."
                 ("jl" "Journal with link" entry
                  (file+olp+datetree
                   ,(expand-file-name "Journal.org" org-directory) "Notes")
-                 "\n* %<%H:%m>\nFrom: %a\n%?" :empty-lines 1)
-                ))))
+                 "\n* %<%H:%m>\nFrom: %a\n%?" :empty-lines 1)))))
+
+(setq org-refile-use-outline-path 'file
+      org-outline-path-complete-in-steps nil)
+
+
+(defun clay-org-roam-refile (&optional p-visit)
+  "Refile current header as a child of a node.
+
+This function combine the original org-roam-refile,
+but narrow the potential destinations.
+
+if P-VISIT is t, place point a destination."
+(interactive)
+(let* (
+       (node (org-roam-node-read nil (lem/org-roam-filter-by-tag "Project") nil :require-match))
+       (file (org-roam-node-file node))
+       (pos  (save-excursion (find-file node)
+                             (org-find-exact-headline-in-buffer "Tasks"))))
+  (org-refile nil nil (list "Tasks" file nil pos))))
 
 (defun save-and-update-includes ()
   "Update the line numbers of #+INCLUDE:s in current buffer.
@@ -1259,7 +1281,9 @@ BEGIN and END are regexps which define the line range to use."
   :hook ((org-mode . evil-org-mode)
          (org-agenda-mode . evil-org-mode)
          (org-capture-mode . evil-insert-state)
-         (evil-org-mode . (lambda () (evil-org-set-key-theme '(navigation todo insert textobjects additional)))))
+         (evil-org-mode . (lambda ()
+                            (evil-org-set-key-theme
+                             '(navigation todo insert textobjects additional)))))
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
@@ -1316,7 +1340,9 @@ BEGIN and END are regexps which define the line range to use."
          :if-new (file+head "%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+category: ${title}\n#+filetags: Project")
          :unnarrowed t)))
 
-(cl-defmethod org-roam-node-date ((node org-roam-node)) (format-time-string "%Y-%m-%d" (org-roam-node-file-mtime node)))
+(cl-defmethod org-roam-node-date
+  ((node org-roam-node))
+  (format-time-string "%Y-%m-%d" (org-roam-node-file-mtime node)))
 
 (setq org-roam-node-display-template
       (concat "${title:*} "
@@ -1340,6 +1366,7 @@ BEGIN and END are regexps which define the line range to use."
           (seq-filter
            (lem/org-roam-filter-by-tag tag-name)
            (org-roam-node-list))))
+
 (defun lem/org-roam-refresh-agenda-list ()
   (interactive)
   (customize-set-variable 'org-agenda-files (delete-dups (append org-agenda-files (lem/org-roam-list-notes-by-tag "Project")))))
@@ -1386,6 +1413,9 @@ BEGIN and END are regexps which define the line range to use."
 
                                         ; initialize the functions
 (lem/org-roam-refresh-agenda-list)
+;; Close org roam package declaration
+
+
 
 (defvar lem/bibliography-files (mapcar
    (lambda (file)

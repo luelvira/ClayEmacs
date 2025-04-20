@@ -3,7 +3,7 @@
 ;; Copyright (C) 2025  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -32,12 +32,40 @@
   :group 'lem
   :type 'number)
 
+(defun clay-java-style-setup ()
+  "Custom Java coding style according to community standards."
+  (message "> clay-java-style-setup called")
+  (c-set-style "java")
+  (setq c-basic-offset lem/java-indentation-value
+        tab-width lem/java-indentation-value
+        indent-tabs-mode nil)
+  (c-set-offset 'arglist-intro '++)
+  (c-set-offset 'arglist-cont-nonempty '++)
+  (c-set-offset 'arglist-cont '++)
+  (c-set-offset 'arglist-close 0)
+  (c-set-offset 'statement-cont '++)
+  (c-set-offset 'inline-open 0)
+  (c-set-offset 'topmost-intro-cont '+)
+  (subword-mode 1))
+
+(use-package java-mode
+  :straight nil
+  :mode "\\.java\\'"
+  :hook (java-mode . clay-java-style-setup)
+  :config
+  (with-eval-after-load 'flycheck
+    (flycheck-define-checker java-checkstyle
+      "A java syntax and style checker using Chekcstyle."
+      :command ("checkstyle" "-f" "xml" "-c" "~/.config/checkstyle/google_checks.xml" source)
+      :error-parser flycheck-parse-checkstyle
+      :modes java-mode)
+ (add-to-list 'flycheck-checkers 'java-checkstyle)))
+  
+(setq major-mode-remap-alist
+      '((java-mode . java-mode)))
+
 (use-package java-ts-mode
-  :hook (java-mode . (lambda ()
-                      (setq c-basic-offset lem/java-indentation-value)
-                      (setq tab-width lem/java-indentation-value)
-                      (setq indent-tabs-mode nil)
-                      (subword-mode 1)))
+  :disabled t
   :config
   (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode)))
 
@@ -46,15 +74,15 @@
   :config
   (add-hook 'java-ts-mode-hook 'maven-test-mode))
 
-(use-package compile
-  :ensure nil
-  :bind (:map java-ts-mode-map
-              ("C-c m c" . (lambda ()
-                             (interactive)
-                             (compile "mvn compile")))
-              ("C-c m t" . (lambda ()
-                             (interactive)
-                             (compile "mvn test")))))
+;;(use-package compile
+;;  :ensure nil
+;;  :bind (:map java-ts-mode-map
+;;              ("C-c m c" . (lambda ()
+;;                             (interactive)
+;;                             (compile "mvn compile")))
+;;              ("C-c m t" . (lambda ()
+;;                             (interactive)
+;;                             (compile "mvn test")))))
 
 (provide 'clay-java)
 ;;; clay-java.el ends here

@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -33,6 +33,13 @@
 (use-package subword
   :config (global-subword-mode 1))
 
+;; smart indent. Detect the indent style and copy it
+(use-package dtrt-indent
+  :ensure t
+  :hook (prog-mode . dtrt-indent-mode)
+  :config
+  (setq dtrt-indent-verbosity 0))
+
 ;;; Install treesitter
 (use-package tree-sitter
       :mode (("\\.tsx\\'" . tsx-ts-mode)
@@ -46,7 +53,7 @@
              ("\\.Dockerfile\\'" . dockerfile-ts-mode)
              ("\\.prisma\\'" . prisma-ts-mode)
              ("\\.ya?ml\\'" . yaml-ts-mode)
-             ("\\.java\\'" . java-ts-mode)
+             ;: ("\\.java\\'" . java-ts-mode)
              ;; More modes defined here...
              )
       :preface
@@ -57,7 +64,7 @@
                  '((css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
                    (bash "https://github.com/tree-sitter/tree-sitter-bash")
                    (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
-                   (java . ("https://github.com/tree-sitter/tree-sitter-java"))
+                  ; (java . ("https://github.com/tree-sitter/tree-sitter-java"))
                    (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.2" "src"))
                    (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.20.2"))
                    (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
@@ -88,21 +95,23 @@
       ;; that this does *not* extend to hooks! Make sure you migrate them
       ;; also
       (dolist (mapping
-               '((python-mode . python-ts-mode)
+               '(
+                 (bash-mode . bash-ts-mode)
+                 (c++-mode . c++-ts-mode)
+                 (c-mode . c-ts-mode)
+                 (c-or-c++-mode . c-or-c++-ts-mode)
                  (css-mode . css-ts-mode)
-                 (typescript-mode . typescript-ts-mode)
+                 (css-mode . css-ts-mode)
+                 ; (java-mode . java-ts-mode)
+                 (js-json-mode . json-ts-mode)
                  (js-mode . typescript-ts-mode)
                  (js2-mode . js-ts-mode)
-                 (c-mode . c-ts-mode)
-                 (c++-mode . c++-ts-mode)
-                 (c-or-c++-mode . c-or-c++-ts-mode)
-                 (bash-mode . bash-ts-mode)
-                 (css-mode . css-ts-mode)
                  (json-mode . json-ts-mode)
-                 (js-json-mode . json-ts-mode)
-                 (sh-mode . bash-ts-mode)
                  (sh-base-mode . bash-ts-mode)
-                 (java-mode . java-ts-mode)))
+                 (sh-mode . bash-ts-mode)
+                 (typescript-mode . typescript-ts-mode)
+                 (python-mode . python-ts-mode)
+                 ))
         (add-to-list 'major-mode-remap-alist mapping))
       :config
       (os/setup-install-grammars))
