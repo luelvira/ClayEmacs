@@ -1170,19 +1170,27 @@ ARG is the minibuffer text."
 
 
 (defun clay-org-roam-refile (&optional p-visit)
-  "Refile current header as a child of a node.
-
-This function combine the original org-roam-refile,
-but narrow the potential destinations.
-
-if P-VISIT is t, place point a destination."
+  "Refile current heading as a child of the 'Tasks' heading in a tagged org-roam node.
+If the 'Tasks' heading does not exist, it will be created at the end of the file.
+If P-VISIT is non-nil, point is moved to the destination."
 (interactive)
-(let* (
-       (node (org-roam-node-read nil (lem/org-roam-filter-by-tag "Project") nil :require-match))
+(let* ((node (org-roam-node-read nil (lem/org-roam-filter-by-tag "Project") nil :require-match))
        (file (org-roam-node-file node))
-       (pos  (save-excursion (find-file node)
-                             (org-find-exact-headline-in-buffer "Tasks"))))
-  (org-refile nil nil (list "Tasks" file nil pos))))
+       (marker nil)
+       (heading-to-move (org-get-heading nil nil nil nil)))
+  ;; Ensure destination exists and get its position
+  (with-current-buffer (find-file-noselect file)
+    (goto-char (point-min))
+    (if (re-search-forward "^\\*+ Tasks" nil t)
+        (setq marker (copy-marker (match-beginning 0)))
+      ;; Create "Tasks" heading if it doesn't exists
+      (progn
+      (goto-char (point-max))
+      (unloss (bolp) (newline))
+      (insert "* Tasks\n")
+      (setq marker (copy-marker (point-at-bol))))))
+  ;; Refile using org-refile
+  (org-refile nil nil (list heading-to-move file nil marker))))
 
 (defun save-and-update-includes ()
   "Update the line numbers of #+INCLUDE:s in current buffer.
