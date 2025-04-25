@@ -285,6 +285,7 @@ PATH: is the dir where the git repo is"
 (setq-default dispaly-line-numbers-width 5
               display-line-numbers-widen nil)
 
+(use-package vi-tilde-fringe)
 (dolist (mode '(text-mode-hook
                 prog-mode-hook
                 conf-mode-hook))
@@ -296,7 +297,6 @@ PATH: is the dir where the git repo is"
       display-time-default-load-average nil)
 (display-time-mode 1)
 
-(use-package vi-tilde-fringe)
 
 (use-package doom-modeline
   :disabled
@@ -756,16 +756,17 @@ ARG is the minibuffer text."
     (evil-define-key 'normal git-timemachine-mode-map (kbd "C-j") 'git-timemachine-show-previous-revision)
     (evil-define-key 'normal git-timemachine-mode-map (kbd "C-k") 'git-timemachine-show-next-revision))
 
-(use-package git-commit
-  :ensure nil
-  :preface
-  (defun my/git-commit-auto-fill-everywhere ()
-    "Ensure that the commit body does not exceed 72 characters."
-    (setq fill-column 72)
-    (setq-local comment-auto-fill-only-comments nil))
-  :hook (git-commit-mode . my/git-commit-auto-fill-everywhere)
-  :custom (git-commit-summary-max-length 50))
-
+;;(use-package git-commit
+;;  :straight nil
+;;  :ensure nil
+;;  :preface
+;;  (defun my/git-commit-auto-fill-everywhere ()
+;;    "Ensure that the commit body does not exceed 72 characters."
+;;    (setq fill-column 72)
+;;    (setq-local comment-auto-fill-only-comments nil))
+;;  :hook (git-commit-mode . my/git-commit-auto-fill-everywhere)
+;;  :custom (git-commit-summary-max-length 50))
+;;
 (setq ediff-split-window-function 'split-window-horizontally
       ediff-window-setup-function 'ediff-setup-windows-plain)
 
@@ -808,6 +809,7 @@ ARG is the minibuffer text."
                    (plugin
                     (stan
                      (globalOn . :json-false))))))
+  
   :hook((python-mode . eglot-ensure)
         (web-mode . eglot-ensure)
         (typescript-mode . eglot-ensure)
@@ -902,6 +904,7 @@ ARG is the minibuffer text."
   :straight (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*")))
 
 (use-package wakatime-mode
+  :disabled
   :straight t
   :config
   (global-wakatime-mode))
@@ -965,7 +968,8 @@ ARG is the minibuffer text."
 (defconst lem/org-directory
   (concat (cond (is-debian "~/Sync/")
                 (is-fedora "~/Sync/")
-                (is-termux "~/storage/shared/Documents/")) "Org/"))
+                (is-termux "~/storage/shared/Documents/")
+		(is-work "~/Documents/")) "Org/"))
 
 (defun lem/org-mode-hook ()
   (variable-pitch-mode)

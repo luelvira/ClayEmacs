@@ -38,6 +38,12 @@
 (defconst is-fedora
   (string= (system-name) "fedora-laptop")
   "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
+
+(defconst is-work
+  (or
+  	(string= (system-name) "baco.diatel.upm.es")
+	(string= (system-name) "fedora"))
+  "Boolean variable to determinate if Emacs is runing on laptop's working machine.")
 ;; -MachineInfo
 
 ;; UserInfo

@@ -116,7 +116,7 @@
       :config
       (os/setup-install-grammars))
 
-(use-package clojure-ts-mode)
+; (use-package clojure-ts-mode)
 
 (when clay-python?
   (require 'clay-python))
@@ -129,6 +129,8 @@
 
 (when clay-java?
   (require 'clay-java))
+
+(require 'clay-uml)
 
 (provide 'clay-develop)
 ;;; clay-develop.el ends here

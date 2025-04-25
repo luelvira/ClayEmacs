@@ -65,9 +65,18 @@
       '((java-mode . java-mode)))
 
 (use-package java-ts-mode
-  :disabled t
+  :disabled
+  :after eglot
+  :hook (java-mode . (lambda ()
+                      (setq c-basic-offset lem/java-indentation-value)
+                      (setq tab-width lem/java-indentation-value)
+                      (setq indent-tabs-mode nil)
+                      (subword-mode 1)))
   :config
-  (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode)))
+  (add-to-list 'auto-mode-alist '("\\.java\\'" . java-ts-mode))
+  (setq jdtlpath (expand-file-name "~/Documents/jdtls"))
+  (add-to-list 'eglot-server-programs
+               `(java-ts-mode . ("jdtls"))))
 
 (use-package maven-test-mode
   :ensure t
