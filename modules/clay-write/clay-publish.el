@@ -42,6 +42,7 @@
   :group 'clayemacs
   :version "0.1.0")
 
+
 (defcustom clay--hugo-ignore-keywords '("filetags" "cite_export" "bundle" "language")
   "A list of keywords to be filtered.
 
@@ -49,6 +50,12 @@ Keep the `bundle' keyword to prevent repeat this option."
   :type '(list :value-type 'String)
   :group 'clayemacs
   :version "0.1.0")
+
+(defcustom clay--obisidian-vault "~/Obsidian_Vault"
+  "The path where org roam will be exported."
+  :type '(directory)
+  :group 'clayemacs
+  :package-version "1.0.0")
 
 (defun clay--org-publish-get-file-tags (filename)
   "Return the list of  filetags from the org file.
@@ -188,6 +195,23 @@ This function was take from ox-org."
          (str (replace-regexp-in-string "\\(^[_]*\\|[_]*$\\)" "" str)))
     str))
 
+(defun clay--org-publish-filter-replace-id-links (text backend info)
+  "Replace id links from the TEXT with file names for Obsidian-style.
+BACKEND is the service used for the export function."
+  (when (org-export-derived-backend-p backend 'md)
+    (replace-regexp-in-string
+     "\\[\\[id:\\([a-zA-Z0-9-]+\\)\\]\\(\\[.*?\\]\\)?\\]"
+     (lambda (match)
+       (let* ((id (match-string 1 match))
+              (desc (match-string 2 match))
+              (file (org-id-find-id-file id)))
+         (if file
+             (let* ((basename (file-name-base file)))
+               (format "[[%s.md%s]]" basename (or desc "")))
+           match)))
+     text)))
+
+
 (defun clay--org-publish-project-filtered ()
   "Define the project properties to be published with a filter rule."
   (let* ((select-tags '("EXPORT")) ;; should be the same as the property :select-tags
@@ -226,7 +250,19 @@ This function was take from ox-org."
              :with-creator nil
              :with-tags nil
              :auto-sitemap nil
-             :hugo-base-dir "../../")))))
+             :hugo-base-dir "../../")
+            ("org-roam-to-obsidian"
+             :base-directory ,org-roam-directory
+             :base-extension "org"
+             :publishing-directory ,clay--obisidian-vault
+             :recursive t
+             :publishing-function org-md-publish-to-md
+             :with-author t
+             :with-creator t
+             :with-date t
+             :with-section-numbers nil
+             :with-tags t
+             :with-broken-links t)))))
 
 (org-export-define-derived-backend 'filter-org 'org
   :options-alist '(
