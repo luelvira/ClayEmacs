@@ -32,6 +32,7 @@
                          (interactive
                           (insert "€")))))
   :custom
+  (ledger-default-date-format "%Y-%m-%d")
   (ledger-binary-path "hledger")
   (ledger-mode-should-check-version nil)
   (ledger-report-auto-width nil)
