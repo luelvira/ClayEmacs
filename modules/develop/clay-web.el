@@ -124,7 +124,7 @@ Default value is 2 following the standards."
 (use-package sass-mode)
 
 (use-package emmet-mode
-  :straight (emmet-mode :type git :host githun :repo "smihica/emmet-mode")
+  :straight (emmet-mode :type git :host github :repo "smihica/emmet-mode")
   :hook (html-mode . emmet-mode))
 
 

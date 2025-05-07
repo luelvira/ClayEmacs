@@ -1,4 +1,4 @@
-;; -*- lexical-binding: t -*-
+;; clayemacs.el --- set up emacs configuration -*- lexical-binding: t -*-
 ;; This file is not part of GNU Emacs
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -166,7 +166,7 @@
 
 (defun lem/go-emacs-modules ()
   (interactive)
-  (lem/interactive-find-file (expand-file-name "lisp/" private-emacs-directory)))
+  (lem/interactive-find-file (expand-file-name "modules/" private-emacs-directory)))
 
 (defun lem/jump-dotfiles ()
   (interactive)
@@ -318,6 +318,7 @@ PATH: is the dir where the git repo is"
         doom-modeline-default-eol-type 0))
 
 (use-package mood-line
+  :straight t
   :config
   (setq mood-line-glyph-alist mood-line-glyphs-fira-code)
   (mood-line-mode))
@@ -809,8 +810,8 @@ ARG is the minibuffer text."
                    (plugin
                     (stan
                      (globalOn . :json-false))))))
-  
   :hook((python-mode . eglot-ensure)
+        (python-ts-mode . eglot-ensure)
         (web-mode . eglot-ensure)
         (typescript-mode . eglot-ensure)
         (js2-mode . eglot-ensure)
@@ -826,6 +827,7 @@ ARG is the minibuffer text."
 
 (use-package flycheck-eglot
   :hook (eglot-managment-mode .flycheck-eglot-mode))
+
 
 (defvar clay-python? t
   "Set true to load the python configuration.")
@@ -903,14 +905,16 @@ ARG is the minibuffer text."
   :after yasnippet
   :straight (doom-snippets :type git :host github :repo "doomemacs/snippets" :files ("*.el" "*")))
 
+(require 'clay-develop)
+
 (use-package wakatime-mode
-  :disabled
+  :disabled (not is-debian)
   :straight t
   :config
   (global-wakatime-mode))
 
 (use-package activity-watch-mode
-:disabled
+  :disabled (not is-debian)
 :straight t
 :config
 (global-activity-watch-mode))
