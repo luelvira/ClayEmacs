@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@
 
 (global-set-key (kbd "C-M-u") 'universal-argument)
 
-(use-package undo-tree
+(use-package! undo-tree
   :init (global-undo-tree-mode 1)
   :config
   (setq undo-tree-auto-save-history nil))
@@ -51,7 +51,7 @@
   (interactive)
   (message "Arrow keys are bad, you know?"))
 
-(use-package evil
+(use-package! evil
   :preface
   (setq evil-ex-search-vim-style-regexp t
         evil-ex-visual-char-range t  ; column range for ex commands
@@ -86,7 +86,7 @@
   (unless is-termux
     (enable-evil-pro-mode)))
 
-(use-package evil-collection
+(use-package! evil-collection
   :after evil
   :init
   (setq evil-collection-company-use-tng nil)  ;; Is this a bug in evil-collection?
@@ -95,7 +95,7 @@
   :config
   (evil-collection-init))
 
-(use-package evil-numbers
+(use-package! evil-numbers
   :after evil
   :config
   (define-key evil-normal-state-map (kbd "g +") 'evil-numbers/inc-at-pt)
@@ -103,12 +103,12 @@
   (define-key evil-visual-state-map (kbd "g +") 'evil-numbers/inc-at-pt-incremental)
   (define-key evil-visual-state-map (kbd "g -") 'evil-numbers/dec-at-pt-incremental))
 
-(use-package evil-surround
+(use-package! evil-surround
   :after evil
   :config
   (global-evil-surround-mode 1))
 
-(use-package evil-nerd-commenter
+(use-package! evil-nerd-commenter
   :after evil
   :commands (evilnc-comment-operator
              evilnc-inner-comment
@@ -129,9 +129,9 @@ Enable it only for the most braves :;"
       (enable-evil-pro-mode)
     (disable-evil-pro-mode)))
 
-(use-package anzu)
+(use-package! anzu)
 
-(use-package evil-anzu
+(use-package! evil-anzu
   :after evil
   :config (global-anzu-mode +1))
 

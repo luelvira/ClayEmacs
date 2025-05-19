@@ -63,7 +63,7 @@ and the `projectile-project-root'"
 )))
 
 
-(use-package haskell-mode
+(use-package! haskell-mode
   :config
   (setq haskell-process-suggest-remove-import-lines t
         haskell-process-auto-import-loaded-modules t

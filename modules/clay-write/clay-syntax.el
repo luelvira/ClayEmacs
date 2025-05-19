@@ -72,7 +72,7 @@
     (ispell-change-dictionary change)
     (message "Dictionary switched from %s to %s" dic change)))
 
-(use-package flyspell
+(use-package! flyspell
   :config
   (setq ispell-program-name clay-flyspell-name)
   (setq ispell-current-dictionary (nth lem-write-dictionaries-pos lem-write-dictionaries-list))
@@ -83,7 +83,7 @@
   ("C-c n d" . lem-write-switch-dictionary))
 
 (when lem-write-langtool-p
-  (use-package langtool
+  (use-package! langtool
   :config
   (setq langtool-language-tool-jar lem-write-langtool-path
         langtool-default-language (nth lem-write-dictionaries-pos lem-write-dictionaries-list))))

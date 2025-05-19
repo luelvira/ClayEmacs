@@ -23,13 +23,13 @@
 ;; Set up the python module
 
 ;;; Code:
-(use-package python-mode
+(use-package! python-mode
   :init
   (setq python-indent-guess-indent-offset t
         python-indent-guess-indent-offset-verbose nil
         python-shell-interpreter "python3"))
 
-(use-package pyvenv
+(use-package! pyvenv
   :init (setenv "WORKON_HOME" "/home/lucas/.pyenv/versions")
   :config
   (pyvenv-mode 1)
@@ -38,7 +38,7 @@
                '(pyvenv-virtual-env-name (" venv:" pyvenv-virtual-env-name " "))
                'append))
 
-(use-package lsp-pyright :ensure t)
+(use-package! lsp-pyright :ensure t)
 
 
 

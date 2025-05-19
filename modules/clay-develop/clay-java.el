@@ -48,8 +48,8 @@
   (c-set-offset 'topmost-intro-cont '+)
   (subword-mode 1))
 
-(use-package java-mode
-  :straight nil
+(use-package! java-mode
+  :remote nil
   :mode "\\.java\\'"
   :hook (java-mode . clay-java-style-setup)
   :config
@@ -62,12 +62,12 @@
  (add-to-list 'flycheck-checkers 'java-checkstyle)))
 
 
-(use-package maven-test-mode
+(use-package! maven-test-mode
   :ensure t
   :config
   (add-hook 'java-ts-mode-hook 'maven-test-mode))
 
-;;(use-package compile
+;;(use-package! compile
 ;;  :ensure nil
 ;;  :bind (:map java-ts-mode-map
 ;;              ("C-c m c" . (lambda ()

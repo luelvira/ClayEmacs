@@ -29,7 +29,7 @@
 (provide 'clay-markdown)
 ;;; clay-markdown.el ends here
 
-(use-package markdown-mode
+(use-package! markdown-mode
   :straight t
   :mode ("\\.mdx?\\'" . gfm-mode)
   :config
@@ -47,4 +47,4 @@ BUFFER is the markdown content file."
             "</html>"))
          (current-buffer)))
 
-(use-package ox-gfm)
+(use-package! ox-gfm)

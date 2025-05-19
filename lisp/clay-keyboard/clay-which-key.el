@@ -1,6 +1,6 @@
-;;; clay-keyboard.el --- Set up shortcuts            -*- lexical-binding: t; -*-
+;;; clay-which-key.el --- setup which key            -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2024  Lucas Elvira Martín
+;; Copyright (C) 2025  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
 ;; Keywords: 
@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(use-package which-key
+(use-package! which-key
   :defer t
   :init (which-key-mode)
   :diminish which-key-mode
@@ -43,9 +43,5 @@
         which-key-allow-imprecise-window-fit nil
         which-key-separator " → " ))
 
-(require 'clay-evil)
-(require 'clay-general)
-
-
-(provide 'clay-keyboard)
-;;; clay-keyboard.el ends here
+(provide 'clay-which-key)
+;;; clay-which-key.el ends here

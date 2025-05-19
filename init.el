@@ -1,8 +1,9 @@
 ;;; init.el --- init file                            -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2024  Lucas Elvira Martín
-
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
+;; License: GPL-3+
+
 ;; Keywords: Emacs, Lisp, configuration
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -19,12 +20,13 @@
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-
-;; This file is the entry point of clayemacs
+;; This is the main init file for Clayemacs.
+;; It sets up paths, garbage collection tweaks, and loads modular configs
+;; from `lisp/`, `modules/`, and `lib/`.
 
 ;;; Code:
-;; BetterGC
-;; Profile emacs startup
+
+;;;; GC Optimization on startup
 (add-hook 'emacs-startup-hook
           (lambda ()
             (setq gc-cons-threshold (* 2 1024 1024)
@@ -32,11 +34,10 @@
             (makunbound 'file-name-handler-alist-original)
             (message "*** Emacs loaded in %s seconds with %d garbage collections."
                      (emacs-init-time "%.2f") gcs-done)))
-;; -BetterGC
 
-;; UpdatePath
+;;;; Load Path Setup
 (defun update-to-load-path (folder)
-  "Update FOLDER and its subdirectories to `load-path'."
+  "Add FOLDER and its subdirectories to `load-path`."
   (let ((base folder))
     (unless (member base load-path)
       (add-to-list 'load-path base))
@@ -48,19 +49,45 @@
           (update-to-load-path name))))))
 
 (update-to-load-path (expand-file-name "modules" private-emacs-directory))
+(update-to-load-path (expand-file-name "lisp" private-emacs-directory))
 (update-to-load-path (expand-file-name "lib" private-emacs-directory))
-;; -UpdatePath
+
+(setq custom-file (expand-file-name "custom.el" private-emacs-directory))
+(when (file-exists-p custom-file)
+  (load custom-file 'noerror 'nomessage))
+
+(advice-add 'flymake-proc-legacy-flymake :before
+            (lambda (&rest _)
+              (message "⚠️ flymake-proc-legacy-flymake was called!")))
+
+(advice-add 'flymake-mode :before
+            (lambda (&rest _)
+              (message "ℹ️ flymake-mode is being activated in buffer: %s" (buffer-name))))
 
 
-
-;; InitRequire
+;;;; Early modules (system, startup, packages)
+(require 'clay-system)
+(require 'startup)
+(require 'clay-init-config)
 (require 'init-package)
-(require 'init-consts)
-;; -InitRequire
-(require 'clayemacs)
-(require 'clay-develop)
+(require 'clay-persistence-config)
 (require 'clay-keyboard)
-(require 'clay-write)
+
+;;;; Core initialization
+(require 'clay-general-config)
+(require 'clay-default-config)
+
+;;;; Interface and UX
+(require 'clay-ui)
+(require 'clayemacs)
+
+
+(require 'clay-dired)
+(require 'clay-autocomplete)
+
+(require 'clay-develop)
+(require 'clay-vterm)
+;; (require 'clay-write)
 (require 'clay-workflow)
 
 (provide 'init)

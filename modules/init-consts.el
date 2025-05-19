@@ -24,26 +24,26 @@
 
 ;; MachineInfo
 (defconst is-termux
-  (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
-  "Boolean variable to determinate if Emacs is runing into termux system.")
+          (string-suffix-p "Android" (string-trim (shell-command-to-string "uname -a")))
+          "Boolean variable to determinate if Emacs is runing into termux system.")
 
 (defconst is-ubuntu
-  (string= (system-name) "HP-Z1-G8")
-  "Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
+          (string= (system-name) "HP-Z1-G8")
+          "Boolean variable to determinate if Emacs is runing on work's ubutnu machine.")
 
 (defconst is-debian
-  (string= (system-name) "debian")
-  "Boolean variable to determinate if Emacs is runing on home's debian machine.")
+          (string= (system-name) "debian")
+          "Boolean variable to determinate if Emacs is runing on home's debian machine.")
 
 (defconst is-fedora
-  (string= (system-name) "fedora-laptop")
-  "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
+          (string= (system-name) "fedora-laptop")
+          "Boolean variable to determinate if Emacs is runing on laptop's fedora machine.")
 
 (defconst is-work
-  (or
-  	(string= (system-name) "baco.diatel.upm.es")
-	(string= (system-name) "fedora"))
-  "Boolean variable to determinate if Emacs is runing on laptop's working machine.")
+          (or
+  	        (string= (system-name) "baco.diatel.upm.es")
+	        (string= (system-name) "fedora"))
+          "Boolean variable to determinate if Emacs is runing on laptop's working machine.")
 ;; -MachineInfo
 
 ;; UserInfo
@@ -58,28 +58,28 @@
 
 ;; Consts
 (defconst lem/dotfiles "~/Documents/git/dotfiles/"
-  "The path where the dotfiles git repo is stored.")
+          "The path where the dotfiles git repo is stored.")
 
 (defconst lem/emacs-conf-directory "~/Documents/git/emacs-config/"
-  "The path where the Emacs configuration is stored.")
+          "The path where the Emacs configuration is stored.")
 
 (defconst python-p
-  (or (executable-find "python3")
-      (and (executable-find "python")
-           (> (length (shell-command-to-string "python --version | grep 'Python 3'")) 0)))
-  "Do we have python3?")
+          (or (executable-find "python3")
+              (and (executable-find "python")
+                   (> (length (shell-command-to-string "python --version | grep 'Python 3'")) 0)))
+          "Do we have python3?")
 
 (defconst pip-p
-  (or (executable-find "pip3")
-      (and (executable-find "pip")
-           (> (length (shell-command-to-string "pip --version | grep 'python 3'")) 0)))
-  "Do we have pip3?")
+          (or (executable-find "pip3")
+              (and (executable-find "pip")
+                   (> (length (shell-command-to-string "pip --version | grep 'python 3'")) 0)))
+          "Do we have pip3?")
 
 (defconst git-dir "~/Documents/git/"
-  "Path for the default git projects.")
+          "Path for the default git projects.")
 
 (defconst lem/website_folder (expand-file-name "hugo_website" git-dir)
-  "Path where I have the content of my personal web.")
+          "Path where I have the content of my personal web.")
 ;; Consts
 
 (provide 'init-consts)

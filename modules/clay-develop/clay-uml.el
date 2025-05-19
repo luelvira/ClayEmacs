@@ -24,7 +24,7 @@
 
 ;;; Code:
 
-(use-package plantuml-mode
+(use-package! plantuml-mode
   :init
     (setq plantuml-jar-path (expand-file-name "~/.local/bin/plantuml.jar"))
     (setq plantuml-default-exec-mode 'jar))

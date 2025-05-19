@@ -25,85 +25,83 @@
 
 ;;; Code:
 
-;; Allows fold the code
-(use-package origami
-  :hook (prog-mode . origami-mode))
+(defgroup clay-dev nil
+          "Group used to setup variables of clay-dev."
+          :group 'clay
+          :prefix "clay-dev"
+          :tag "Clay Dev")
 
-;; Select words based on the camelCase or snake_case style
-(use-package subword
-  :config (global-subword-mode 1))
+(defgroup clay-langs nil
+  "Flags to enable or disable language-specific modules."
+  :group 'clay-dev
+  :prefix "clay-dev")
 
-;; smart indent. Detect the indent style and copy it
-(use-package dtrt-indent
-  :ensure t
-  :hook (prog-mode . dtrt-indent-mode)
-  :config
-  (setq dtrt-indent-verbosity 0))
+(defcustom clay-python? nil
+  "Enable support for Python projects."
+  :type 'boolean
+  :group 'clay-langs)
 
-(use-package treesit
-  :straight nil
-  :when (and (fboundp 'treesit-available-p) (treesit-available-p))
-  :init
-  (defvar treesit-language-source-alist nil)
-  (setq treesit-language-source-alist
-           '(
-             (bash "https://github.com/tree-sitter/tree-sitter-bash")
-             (c "https://github.com/tree-sitter/tree-sitter-c")
-             (cmake "https://github.com/uyha/tree-sitter-cmake")
-             (cpp "https://github.com/tree-sitter/tree-sitter-cpp")
-             (css . ("https://github.com/tree-sitter/tree-sitter-css" "v0.20.0"))
-             (dockerfile . ("https://github.com/camdencheek/tree-sitter-dockerfile.git"))
-             (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-             (html . ("https://github.com/tree-sitter/tree-sitter-html" "v0.20.1"))
-             (javascript . ("https://github.com/tree-sitter/tree-sitter-javascript" "v0.21.2" "src"))
-             (json . ("https://github.com/tree-sitter/tree-sitter-json" "v0.20.2"))
-             (make "https://github.com/alemuller/tree-sitter-make")
-             (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-             (prisma "https://github.com/victorhqc/tree-sitter-prisma")
-             (python . ("https://github.com/tree-sitter/tree-sitter-python" "v0.20.4"))
-             (toml "https://github.com/tree-sitter/tree-sitter-toml")
-             (tsx . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "tsx/src"))
-             (typescript . ("https://github.com/tree-sitter/tree-sitter-typescript" "v0.20.3" "typescript/src"))
-             (yaml . ("https://github.com/ikatyang/tree-sitter-yaml" "v0.5.0"))))
-    :config
-    (dolist (mapping
-             '(
-               (bash-mode . bash-ts-mode)
-               (c++-mode . c++-ts-mode)
-               (c-mode . c-ts-mode)
-               (c-or-c++-mode . c-or-c++-ts-mode)
-               (css-mode . css-ts-mode)
-               (css-mode . css-ts-mode)
-               (js-json-mode . json-ts-mode)
-               (js-mode . typescript-ts-mode)
-               (js2-mode . js-ts-mode)
-               (json-mode . json-ts-mode)
-               (sh-base-mode . bash-ts-mode)
-               (sh-mode . bash-ts-mode)
-               (typescript-mode . typescript-ts-mode)
-               (python-mode . python-ts-mode)
-               ))
-      (add-to-list 'major-mode-remap-alist mapping))
-    (defun os/setup-install-grammars ()
-      (interactive)
-      (dolist (lang treesit-language-source-alist)
-        (unless (treesit-language-available-p (car lang))
-          (treesit-install-language-grammar (car lang)))))
-    (os/setup-install-grammars))
+(defcustom clay-web? nil
+  "Enable support for web development (HTML, CSS, JS, etc.)."
+  :type 'boolean
+  :group 'clay-langs)
 
-(when clay-python?
-  (require 'clay-python))
+(defcustom clay-ts? nil
+  "Enable support for TypeScript files."
+  :type 'boolean
+  :group 'clay-langs)
 
-(when clay-web?
-  (require 'clay-web))
+(defcustom clay-react? nil
+  "Enable support for React projects."
+  :type 'boolean
+  :group 'clay-langs)
 
-(when clay-haskell?
-  (require 'clay-haskell))
+(defcustom clay-haskell? nil
+  "Enable support for Haskell projects."
+  :type 'boolean
+  :group 'clay-langs)
 
-(when clay-java?
-  (require 'clay-java))
+(defcustom clay-java? nil
+  "Enable support for Java projects."
+  :type 'boolean
+  :group 'clay-langs)
 
-(require 'clay-uml)
+(defcustom clay-clojure? nil
+  "Enable support for clojure projects."
+  :type 'boolean
+  :group 'clay-langs)
+
+(defcustom clay-ps? nil
+  "Enable support for ps projects."
+  :type 'boolean
+  :group 'clay-langs)
+
+(defcustom clay-uml? nil
+  "Enable support for uml language."
+  :type 'boolean
+  :group 'clay-langs)
+
+;; Load always these base modules (non-optional)
+(use-package! clay-dev-core     :remote nil)
+(use-package! clay-dev-lsp      :remote nil)
+(use-package! clay-dev-enhancements :remote nil)
+(use-package! clay-dev-treesitter   :remote nil)
+(use-package! clay-version-control :remote nil)
+
+(use-package! clay-python
+              :when clay-python?
+              :remote nil)
+
+(use-package! clay-web
+              :when clay-web?
+              :remote nil)
+
+(use-package! clay-elisp
+              :remote nil)
+
+(when clay-haskell? (use-package! clay-haskell: remote nil))
+(when clay-java? (use-package! clay-java :remote nil))
+(when clay-uml? (use-pacakge! clay-uml :remote nil))
 
 (provide 'clay-develop)
 ;;; clay-develop.el ends here

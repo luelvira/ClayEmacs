@@ -25,6 +25,7 @@
 
 (require 'clay-finances)
 (require 'clay-time-management)
+(require 'clay-org)
 
 
 (provide 'clay-workflow)

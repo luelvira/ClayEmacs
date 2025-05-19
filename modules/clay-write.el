@@ -42,13 +42,13 @@
 
 (when clay-syntax?
   (require 'clay-syntax))
-(use-package visual-fill-column)
+(use-package! visual-fill-column)
 (when clay-gmd?
   (require 'clay-markdown))
 (when clay-latex?
   (require 'clay-latex))
 
-(use-package ox-hugo
+(use-package! ox-hugo
   :after ox)
 
 (when clay-publish?

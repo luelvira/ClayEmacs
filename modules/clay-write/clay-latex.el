@@ -24,8 +24,8 @@
 
 ;;; Code:
 
-(use-package auctex)
-(use-package cdlatex)
+(use-package! auctex)
+(use-package! cdlatex)
 
 (defcustom clay-org-plain-latex-template
   (concat

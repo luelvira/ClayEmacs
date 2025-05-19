@@ -66,9 +66,9 @@ Default value is 2 following the standards."
         web-mode-script-padding       lem/js-indentation-value))
 
 ;; Load the packages
-(use-package js2-mode
+(use-package! js2-mode
   :mode (("\\.jsx?\\'" . js2-mode))
-  :ensure flycheck
+  :after flycheck
   :hook ((js2-mode . js2-imenu-extras-mode)
          (js2-mode . prettier-js-mode)
          (js2-mode . lem/js-indentation))
@@ -83,24 +83,24 @@ Default value is 2 following the standards."
    ;; Use js2-mode for Node scripts
    (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode)))
 
-(use-package prettier-js
+(use-package! prettier-js
   :custom (prettier-js-args '("--print-width" "100"
                               "--single-quote" "true"
                               "--trailing-comma" "all"))
   :config
   (setq prettier-js-show-errors nil))
 
-(use-package js2-refactor
+(use-package! js2-refactor
   :hook ((js2-mode rjsx-mode) . js2-refactor-mode))
 
-(use-package web-mode
+(use-package! web-mode
   :mode "(\\.htmlx?"
   :config
   (lem/web-indentation))
 
-(use-package typescript-mode
+(use-package! typescript-mode
   :disabled clay-ts?
-  :ensure flycheck
+  :after flycheck
   :hook ((typescript-mode . prettier-js-mode))
   :mode ("\\.\\(ts\\|tsx\\)\\'")
   :custom
@@ -111,26 +111,26 @@ Default value is 2 following the standards."
   :config
   (flycheck-add-mode 'javascript-eslint 'typescript-mode))
 
-(use-package rjsx-mode
+(use-package! rjsx-mode
   :disabled clay-react?)
 
 
-(use-package simple-httpd :defer t)
-(use-package impatient-mode :defer t)
-(use-package skewer-mode :defer t)
+(use-package! simple-httpd :defer t)
+(use-package! impatient-mode :defer t)
+(use-package! skewer-mode :defer t)
 
-(use-package rainbow-mode
+(use-package! rainbow-mode
   :hook ((css-mode sass-mode) . rainbow-mode))
-(use-package sass-mode)
+(use-package! sass-mode)
 
-(use-package emmet-mode
-  :straight (emmet-mode :type git :host github :repo "smihica/emmet-mode")
+(use-package! emmet-mode
+  :remote (emmet-mode :type git :host github :repo "smihica/emmet-mode")
   :hook (html-mode . emmet-mode))
 
 
-(use-package jshint-mode
-  :straight (jshint-mode :type git :host github :repo "daleharvey/jshint-mode")
-  :disabled t
+(use-package! jshint-mode
+  :disabled
+  :remote (jshint-mode :type git :host github :repo "daleharvey/jshint-mode")
   :config
   ;; jshint from https://github.com/daleharvey/jshint-mode
   (add-to-list 'load-path "~/path/to/jshint-mode")
@@ -138,8 +138,8 @@ Default value is 2 following the standards."
   (add-hook 'javascript-mode-hook
             (lambda () (flymake-mode t))))
 
-(use-package flymake-eslint
-  :straight t
+(use-package! flymake-eslint
+  :remote t
   :config
   (defun lemacs/use-local-eslint ()
     "Set project's `node_modules' binary eslint as first priority.
