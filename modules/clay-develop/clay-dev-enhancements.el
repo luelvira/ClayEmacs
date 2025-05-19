@@ -1,18 +1,30 @@
-;;; clay-dev-enhancements.el --- Editor enhancements for dev modes -*- lexical-binding: t; -*-
+;;; clay-dev-enhancements.el --- Editor enhancements for dev modes  -*- lexical-binding: t; -*-
 
-(dolist (mode '(text-mode-hook
-                 prog-mode-hook
-                 conf-mode-hook))
-  (add-hook mode (lambda ()
-                   (display-line-numbers-mode 1))))
+;; Copyright (C) 2025  Lucas Elvira Martín
 
-(use-package! vi-tilde-fringe
-              :remote (:host github :repo "syl20bnr/vi-tilde-fringe")
-              :hook ((text-mode prog-mode conf-mode) . vi-tilde-fringe-mode))
-              
+;; Keywords:
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;
+
+;;; Code:
 
 ;; Allows fold the code
-;; (use-package! origami :hook (prog-mode . origami-mode))
+(use-package! origami :hook (prog-mode . origami-mode))
 
 
 ;; Select words based on the camelCase or snake_case style

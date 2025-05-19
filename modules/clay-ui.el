@@ -63,9 +63,10 @@
   "The default value of transparency used for the current frame."
   :set (lambda (k v)
          (set-default k v)
-         (when (fboundp 'clay-set-background) (clay-set-background)))
-  :group 'lem
-  :type '(number))
+         (when (fboundp 'clay-set-background)
+           (clay-set-background)))
+  :group 'clay-gui
+  :type 'number)
 
 
 (defvar clay-ligatures-prog-mode-list
@@ -198,6 +199,16 @@ This is required when using the daemon mode"
 
 (add-hook 'prog-mode-hook #'hl-line-mode)
 (add-hook 'conf-mode-hook #'hl-line-mode)
+
+(dolist (mode '(text-mode-hook
+                 prog-mode-hook
+                 conf-mode-hook))
+  (add-hook mode (lambda ()
+                   (display-line-numbers-mode 1))))
+
+(use-package! vi-tilde-fringe
+              :remote (:host github :repo "syl20bnr/vi-tilde-fringe")
+              :hook ((text-mode prog-mode conf-mode) . vi-tilde-fringe-mode))
 
 (provide 'clay-ui)
 ;;; clay-ui.el ends here

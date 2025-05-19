@@ -175,7 +175,9 @@ If P-VISIT is non-nil, point is moved to the destination."
                             (propertize "${aliases:10}")
                             (propertize "${tags:30}"  'face 'org-tag)
                             (propertize "${date:10}"  'face 'org-date)))
-              (org-roam-db-autosync-mode)
+              (if (file-directory-p org-roam-directory)
+                   (org-roam-db-autosync-mode)
+                  (message "Warning: %s don't exists" org-roam-directory))
               (cl-defmethod org-roam-node-date
                 ((node org-roam-node))
                 (format-time-string "%Y-%m-%d" (org-roam-node-file-mtime node))))

@@ -163,7 +163,8 @@ Does not save to system clipboard."
     (consult-goto-line)))
 
 (use-package! consult-dir
-  :remote 
+  :after consult
+  :remote
   :bind (([remap list-directory] . consult-dir)
          :map vertico-map
          ("C-x C-d" . consult-dir)

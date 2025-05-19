@@ -26,7 +26,14 @@
             (lambda () (interactive)
               (dired-omit-mode 1)
               (dired-hide-details-mode 1)
-              (hl-line-mode 1))))
+              (hl-line-mode 1)))
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "h" 'dired-single-up-directory
+    "H" 'dired-omit-mode
+    ;"l" 'dired-single-buffer
+    "y" 'dired-ranger-copy
+    "X" 'dired-ranger-move
+    "p" 'dired-ranger-paste))
 
 (use-package! dired-open
   :config
@@ -41,31 +48,40 @@
 (use-package! dired-ranger   :after dired)
 (use-package! dired-collapse :after dired)
 
-;; Dirvish: modern dired frontend with buffer reuse and previews
-(use-package! dirvish
-  :after dired
-  :init
-  (dirvish-override-dired-mode)
+(use-package! peep-dired
+  :after t
+  :hook (evil-normalize-keymaps . peep-dired-hook)
   :config
-  (setq dirvish-attributes '(nerd-icons file-size subtree-state vc-state)
-        dirvish-default-layout '(0 0.2 0.8)
-        dirvish-mode-line-format '(:left (sort file-time symlink) :right (omit yank index))
-        dirvish-header-line-height 20
-        dirvish-use-header-line t
-        dirvish-hide-details t
-        delete-by-moving-to-trash t
-        dirvish-preview-dispatchers
-        '(dirvish-preview-image
-          dirvish-preview-epub
-          dirvish-preview-video
-          dirvish-preview-pdf))
-  (evil-collection-define-key 'normal 'dirvish-mode-map
-    "h" 'dired-up-directory
-    "l" 'dirvish-find-entry
-    "H" 'dired-omit-mode
-    "y" 'dired-ranger-copy
-    "X" 'dired-ranger-move
-    "p" 'dired-ranger-paste
-    "q" 'dirvish-quit))
+    (evil-define-key 'normal peep-dired-mode-map (kbd "C-j") 'peep-dired-next-file)
+    (evil-define-key 'normal peep-dired-mode-map (kbd "C-k") 'peep-dired-prev-file))
+
+
+;; Dirvish: modern dired frontend with buffer reuse and previews
+;;(use-package! dirvish
+;;  :commands dirvish-find-entry-a dirvish-dired-noselect-a
+;;  :after dired
+;;  :init
+;;  (dirvish-override-dired-mode)
+;;  :config
+;;  (setq dirvish-attributes '(nerd-icons file-size subtree-state vc-state)
+;;        dirvish-default-layout '(0 0.2 0.8)
+;;        dirvish-mode-line-format '(:left (sort file-time symlink) :right (omit yank index))
+;;        dirvish-header-line-height 20
+;;        dirvish-use-header-line t
+;;        dirvish-hide-details t
+;;        delete-by-moving-to-trash t
+;;        dirvish-preview-dispatchers
+;;        '(dirvish-preview-image
+;;          dirvish-preview-epub
+;;          dirvish-preview-video
+;;          dirvish-preview-pdf))
+;;  (evil-collection-define-key 'normal 'dirvish-mode-map
+;;    "h" 'dired-up-directory
+;;    "l" 'dirvish-find-entry
+;;    "H" 'dired-omit-mode
+;;    "y" 'dired-ranger-copy
+;;    "X" 'dired-ranger-move
+;;    "p" 'dired-ranger-paste
+;;    "q" 'dirvish-quit))
 
 (provide 'clay-dired)

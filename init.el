@@ -79,8 +79,6 @@
 
 ;;;; Interface and UX
 (require 'clay-ui)
-(require 'clayemacs)
-
 
 (require 'clay-dired)
 (require 'clay-autocomplete)

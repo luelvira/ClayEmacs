@@ -44,26 +44,10 @@ This includes buffers not visiting a file, or buffers whose names match entries 
   "Whether to use flymake or flycheck in case of diagnostic is active."
   :type 'boolean
   :group 'clay-dev)
-  
 
-;;;###autoload
-(defun clay-dev--maybe-enable-diagnostics ()
-  (unless (apply #'derived-mode-p clay-dev-diagnostic-disabled-modes)
-    (if clay-dev-flymake?
-        (when (fboundp 'flymake-mode)
-        (flymake-mode 1))
-      (when (fboundp 'flycheck-mode)
-      (flycheck-mode 1)))))
-
-(defun clay-dev--disable-legacy-flymake ()
-  (when (member #'flymake-proc-legacy-flymake flymake-diagnostic-functions)
-    (remove-hook 'flymake-diagnostic-functions #'flymake-proc-legacy-flymake t)))
-
-;;(use-package! prog-mode
-;;              :hook (prog-mode . clay-dev--maybe-enable-diagnostics)
-;;              :remote nil)
-
-(use-package! project :remote t) ;; There is an error with eglot and project https://emacs.stackexchange.com/a/81908
+;; There is an error with eglot and project
+;; https://emacs.stackexchange.com/a/81908
+(use-package! project :remote t)
 
 (use-package! projectile
   :remote t
@@ -88,9 +72,8 @@ This includes buffers not visiting a file, or buffers whose names match entries 
 (use-package! flymake
               :if (and clay-dev-check-syntax? clay-dev-flymake?)
               :remote (:host github :repo "emacs-straight/flymake")
-              :hook ((prog-mode . clay-dev--maybe-enable-diagnostics)
-                     (text-mode . clay-dev--maybe-enable-diagnostics)
-                     (flymake-mode . clay-dev--disable-legacy-flymake))
+              :hook ((prog-mode . flymake-mode)
+                     (text-mode . flymake-mode))
               :config
               (setq flymake-fringe-indicator-position 'right-fringe))
 

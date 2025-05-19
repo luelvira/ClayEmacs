@@ -100,7 +100,7 @@
               :config
               (setq flymake-diagnostic-functions nil)
               (setq evil-shift-width 2)
-              (advice-add 'elisp-flymake-byte-compile :around #'clay-dev--elisp-flymake-load-path))
+              (advice-add 'elisp-flymake-byte-compile :around #'clay-dev-elisp-flymake-load-path))
 
 (use-package rainbow-delimiters
   :init (setq rainbow-delimiters-max-face-count 4)

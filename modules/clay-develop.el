@@ -99,9 +99,9 @@
 (use-package! clay-elisp
               :remote nil)
 
-(when clay-haskell? (use-package! clay-haskell: remote nil))
+(when clay-haskell? (use-package! clay-haskell: :remote nil))
 (when clay-java? (use-package! clay-java :remote nil))
-(when clay-uml? (use-pacakge! clay-uml :remote nil))
+(when clay-uml? (use-package! clay-uml :remote nil))
 
 (provide 'clay-develop)
 ;;; clay-develop.el ends here

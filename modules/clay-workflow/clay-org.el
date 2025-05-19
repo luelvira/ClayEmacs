@@ -8,6 +8,9 @@
 
 (defcustom clay-org-directory "~/org"
            "Main directory where org files are stored."
+           :set (lambda (k v)
+                  (set-default k v)
+                  (setq org-directory v))
            :type 'directory
            :group 'clay-org)
 
