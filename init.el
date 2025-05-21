@@ -56,14 +56,14 @@
 (when (file-exists-p custom-file)
   (load custom-file 'noerror 'nomessage))
 
-(advice-add 'flymake-proc-legacy-flymake :before
-            (lambda (&rest _)
-              (message "⚠️ flymake-proc-legacy-flymake was called!")))
-
-(advice-add 'flymake-mode :before
-            (lambda (&rest _)
-              (message "ℹ️ flymake-mode is being activated in buffer: %s" (buffer-name))))
-
+;;(advice-add 'flymake-proc-legacy-flymake :before
+;;            (lambda (&rest _)
+;;              (message "⚠️ flymake-proc-legacy-flymake was called!")))
+;;
+;;(advice-add 'flymake-mode :before
+;;            (lambda (&rest _)
+;;              (message "ℹ️ flymake-mode is being activated in buffer: %s" (buffer-name))))
+;;
 
 ;;;; Early modules (system, startup, packages)
 (require 'clay-system)
@@ -72,6 +72,11 @@
 (require 'init-package)
 (require 'clay-persistence-config)
 (require 'clay-keyboard)
+(require 'clay-file-utils)
+;;(use-package! clay-file-utils
+;;  :after 'clay-keyboard
+;;  :config
+;;    (message "clay-leader-key-def %s" (fboundp 'clay-leader-key-def)))
 
 ;;;; Core initialization
 (require 'clay-general-config)

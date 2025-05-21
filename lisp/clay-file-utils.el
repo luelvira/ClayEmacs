@@ -35,5 +35,10 @@
   (load-file user-init-file)
   (load-file user-init-file))
 
+(clay-map!
+ "fD" '(clay-delete-this-file :which-key "Delete current file")
+ "fR" '(clay-rename-this-file                          :which-key "Rename current file")
+ )
+
 
 (provide 'clay-file-utils)

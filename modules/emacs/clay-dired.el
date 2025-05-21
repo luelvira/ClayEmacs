@@ -1,87 +1,78 @@
-;;; clay-dired.el --- Dired configuration with Dirvish -*- lexical-binding: t; -*-
-(use-package! dired
+;;; clay-dired.el --- dired but modern               -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  Lucas Elvira Martín
+
+;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
+;; Keywords: 
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; 
+
+;;; Code:
+
+(use-package! dirvish
   :after evil-collection
-  :remote nil
-  :commands dired-jump
   :init
-  (setq dired-dwim-target t  ; suggest a target for moving/copying intelligently
-        ;; don't prompt to revert, just do it
+  ;; Activar dirvish sobre dired
+  (dirvish-override-dired-mode)
+
+  ;; Configuraciones similares a tu setup de dired
+  (setq dired-dwim-target t
         dired-auto-revert-buffer #'dired-buffer-stale-p
-        ;; Always copy/delete recursively
         dired-recursive-copies  'always
         dired-recursive-deletes 'top
-        ;; Ask whether destination dirs should get created when copying/removing files.
-        dired-create-destination-dirs 'ask)
+        dired-create-destination-dirs 'ask
+        dired-listing-switches "--group-directories-first -alh")
 
   :config
-  (setq dired-listing-swithces "--group-directories-first"
-        dired-omit-files "^\\.[^.].*"
+  (setq dirvish-attributes '(file-size file-time collapse subtree-state)
         delete-by-moving-to-trash t)
-  (autoload 'dired-omit-mode "dired-x")
-  (add-hook 'dired-load-hook
-            (lambda ()
-              (interactive)
-              (dired-collapse)))
-  (add-hook 'dired-mode-hook
-            (lambda () (interactive)
-              (dired-omit-mode 1)
-              (dired-hide-details-mode 1)
-              (hl-line-mode 1)))
-  (evil-collection-define-key 'normal 'dired-mode-map
-    "h" 'dired-single-up-directory
-    "H" 'dired-omit-mode
-    ;"l" 'dired-single-buffer
+
+  ;; Activar visual helpers
+  (add-hook 'dirvish-directory-view-mode-hook #'hl-line-mode)
+
+  ;; Integrar con peep-dired-like preview
+  (setq dirvish-preview-dispatchers (list 'image 'archive 'pdf))
+
+  ;; Custom keybindings al estilo evil
+  (evil-collection-define-key 'normal 'dirvish-mode-map
+    "h" 'dired-up-directory
+    "l" 'dired-find-file
     "y" 'dired-ranger-copy
     "X" 'dired-ranger-move
-    "p" 'dired-ranger-paste))
+    "p" 'dired-ranger-paste
+    "H" 'dired-omit-mode
+    "C-j" 'dirvish-next-line
+    "C-k" 'dirvish-previous-line))
 
+;; Integración con extensiones de archivo (como dired-open)
 (use-package! dired-open
+  :after dired
   :config
-  (setq dired-open-extensions '(("gif" . "sxiv")
-                                ("jpg" . "sxiv")
-                                ("mkv" . "mpv")
-                                ("mp4" . "mpv")
-                                ("pdf" . "firefox")
-                                ("png" . "sxiv"))))
+  (setq dired-open-extensions
+        '(("gif" . "sxiv")
+          ("jpg" . "sxiv")
+          ("mkv" . "mpv")
+          ("mp4" . "mpv")
+          ("pdf" . "firefox")
+          ("png" . "sxiv"))))
 
-
-(use-package! dired-ranger   :after dired)
 (use-package! dired-collapse :after dired)
-
-(use-package! peep-dired
-  :after t
-  :hook (evil-normalize-keymaps . peep-dired-hook)
-  :config
-    (evil-define-key 'normal peep-dired-mode-map (kbd "C-j") 'peep-dired-next-file)
-    (evil-define-key 'normal peep-dired-mode-map (kbd "C-k") 'peep-dired-prev-file))
-
-
-;; Dirvish: modern dired frontend with buffer reuse and previews
-;;(use-package! dirvish
-;;  :commands dirvish-find-entry-a dirvish-dired-noselect-a
-;;  :after dired
-;;  :init
-;;  (dirvish-override-dired-mode)
-;;  :config
-;;  (setq dirvish-attributes '(nerd-icons file-size subtree-state vc-state)
-;;        dirvish-default-layout '(0 0.2 0.8)
-;;        dirvish-mode-line-format '(:left (sort file-time symlink) :right (omit yank index))
-;;        dirvish-header-line-height 20
-;;        dirvish-use-header-line t
-;;        dirvish-hide-details t
-;;        delete-by-moving-to-trash t
-;;        dirvish-preview-dispatchers
-;;        '(dirvish-preview-image
-;;          dirvish-preview-epub
-;;          dirvish-preview-video
-;;          dirvish-preview-pdf))
-;;  (evil-collection-define-key 'normal 'dirvish-mode-map
-;;    "h" 'dired-up-directory
-;;    "l" 'dirvish-find-entry
-;;    "H" 'dired-omit-mode
-;;    "y" 'dired-ranger-copy
-;;    "X" 'dired-ranger-move
-;;    "p" 'dired-ranger-paste
-;;    "q" 'dirvish-quit))
+(use-package! dired-ranger   :after dired)
 
 (provide 'clay-dired)
+;;; clay-dired.el ends here

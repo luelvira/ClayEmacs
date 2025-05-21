@@ -24,7 +24,11 @@
 ;;; Code:
 
 ;; Allows fold the code
-(use-package! origami :hook (prog-mode . origami-mode))
+;; (use-package! origami :hook (prog-mode . origami-mode))
+(use-package! hideshow :remote nil)
+(use-package! evil-vimish-fold)
+(use-package! ts-fold
+              :remote (:host github :repo "emacs-tree-sitter/ts-fold"))
 
 
 ;; Select words based on the camelCase or snake_case style

@@ -138,6 +138,7 @@ Does not save to system clipboard."
   (("C-s"   . my/consult-line)
    ("C-M-l" . consult-imenu)
    ("C-M-j" . persp-switch-to-buffer*)
+   ("M-x"   . execute-extended-command)
    :map minibuffer-local-map
    ("C-r"   . consult-history))
   :custom

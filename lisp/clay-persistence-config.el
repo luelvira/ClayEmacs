@@ -45,7 +45,11 @@
              (setq savehist-file (no-littering-expand-var-file-name "savehist"))
              :config
              (setq history-length 25
-                   history-delete-duplicates t)
+                   history-delete-duplicates t
+                   savehist-additional-variables '(kill-ring  ; persis clipboard
+                                                   register-alist ; persis macros
+                                                   mark-ring global-mark-ring
+                                                   search-ring regexp-search-ring)) ;; persist search
              (savehist-mode 1))
 
 (use-package! saveplace

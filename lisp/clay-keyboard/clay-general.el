@@ -25,14 +25,15 @@
 ;;; Code:
 
 (use-package! general
+  :demand t
   :config
   (general-evil-setup t)
-  (general-create-definer lem/leader-key-def
+  (general-create-definer clay-leader-key-def
     :keymaps '(normal insert visual emacs)
     :prefix "SPC"
     :global-prefix "C-SPC")
 
-  (lem/leader-key-def
+  (clay-leader-key-def
     "b" '(:ignore t                                      :which-key "buffers/bookmarks")
     "bl" '(bookmark-jump                                 :which-key "List bookmarks")
     "bm" '(bookmark-set                                  :which-key "Set bookmark")
@@ -44,36 +45,32 @@
     "bn" '(next-buffer                                   :which-key "Goto next buffer")
     "bp" '(previous-buffer                               :which-key "Goto previous-buffer buffer")
     "bs" '(save-buffer                                   :which-key "Save current buffer")
-    "fD" '(lem/delete-this-file                          :which-key "Delete current file")
-    "fR" '(lem/rename-this-file                          :which-key "Rename current file")
-    "ER" '(lem/reload-init-file                          :which-key "Reload init file")
+    "ER" '(clay-reload-init-file                          :which-key "Reload init file")
     "e" '(:ignore t                                      :which-key "Eshell/Evaluate")
     "eb" '(eval-buffer                                   :which-key "Evaluate elisp in buffer")
     "ed" '(eval-defun                                    :which-key "Evaluate defun containing or after point")
     "ee" '(eval-expression                               :which-key "Evaluate and elisp expression")
     "el" '(eval-last-sexp                                :which-key "Evaluate elisp expression before point")
     "er" '(eval-region                                   :which-key "Evaluate elisp in region")
-    "fp" '(lem/go-dotfiles                               :which-key "Config")
+    "fp" '(clay-go-dotfiles                               :which-key "Config")
     "fe" '(:ignore t                                     :which-key "Emacs files")
-    "fec" '(lem/go-emacs-config                          :which-key "Emacs Config file")
-    "fei" '(lem/go-emacs-init                            :which-key "Emacs init file")
-    "fem" '(lem/go-emacs-modules                         :which-key "Custom libraries")
+    "fec" '(clay-go-emacs-config                          :which-key "Emacs Config file")
+    "fei" '(clay-go-emacs-init                            :which-key "Emacs init file")
+    "fem" '(clay-go-emacs-modules                         :which-key "Custom libraries")
     "d"  '(:ignore t                                     :which-key "Dired")
     "dd" '(dired                                         :which-key "Open dired")
     "dj" '(dired-jump                                    :which-key "Dired jump to current")
-    "dp" '(lem/jump-dotfiles                             :which-key "Go to dotfiles folder")
+    "dp" '(clay-jump-dotfiles                             :which-key "Go to dotfiles folder")
     "f" '(:ignore t                                      :which-key "Files")
-    "fD" '(lem/delete-this-file                          :which-key "Delete current file")
     "fd" '(find-grep-dired                               :which-key "Search for string in files in DIR")
     "ff" '(find-file                                     :which-key "Find files")
     "fr" '(recentf-open-files                            :which-key "Recent files")
-    "fR" '(lem/rename-this-file                          :which-key "Rename current file")
     "o"   '(:ignore t                                    :which-key "org mode")
     "ol"  '(:ignore t                                    :which-key "Link")
     "oli" '(org-insert-link                              :which-key "insert link")
     "ols" '(org-store-link                               :which-key "store link")
     "oN"  '(org-toggle-narrow-to-subtree                 :which-key "toggle narrow")
-    "os"  '(lem/org-search                               :which-key "search notes")
+    "os"  '(clay-org-search                               :which-key "search notes")
     "oa"  '(org-agenda                                   :which-key "Status")
     "oc"  '(org-capture t                                :which-key "Capture")
     "oC"  '(:ignore t                                    :which-key "Org clock")
@@ -82,7 +79,7 @@
     "oCi" '(org-clock-in                                 :which-key "Clock in in the current task")
     "oCI" '(org-clock-in-last                            :which-key "Clock-in the last task")
     "oCo" '(org-clock-out                                :which-key "Clock-out current clock")
-    "on"  '((lambda () (interactive) (lem/interactive-find-file org-directory)) :which-key "Notes")
+    "on"  '((lambda () (interactive) (clay-interactive-find-file org-directory)) :which-key "Notes")
     "op"  '(:ignore t                                    :which-key "Pomodoro")
     "ops" '(org-pomodoro                                 :which-key "Start org pomodoro")
     "opt" '(set-pomodoro-timer                           :which-key "Set pomodoro timer")
@@ -95,7 +92,7 @@
     "oTi" '(org-toggle-checkbox                          :which-key "Org toggle checkbox")
     "or"  '(:ignore t                                    :which-key "Org roam")
     "orI" '(org-roam-node-insert-immediate               :which-key "Roam insert immediately")
-    "orc" '(lem/org-roam-capture-task                    :which-key "Roam capture tast")
+    "orc" '(clay-org-roam-capture-task                    :which-key "Roam capture tast")
     "orf" '(org-roam-node-find                           :which-key "Org roam node find")
     "org" '(org-roam-ui-open                             :which-key "Open org roam graph")
     "ori" '(org-roam-node-insert                         :which-key "Org roam node insert")
@@ -111,14 +108,14 @@
     "pc" '(projectile-compile-project                    :which-key "Compile Project")
     "pd" '(projectile-dired                              :which-key "Projectile dired")
     "s" '(:ignore t                                      :which-key "sync")
-    "so" '(lem/sync-org                                  :which-key "Sync org files")
-    "sc" '(lem/sync-conf                                 :which-key "Sync config folder")
-    "se" '(lem/sync-emacs                                :which-key "Sync emacs configuration")
+    "so" '(clay-sync-org                                  :which-key "Sync org files")
+    "sc" '(clay-sync-conf                                 :which-key "Sync config folder")
+    "se" '(clay-sync-emacs                                :which-key "Sync emacs configuration")
     "sb" '(org-roam-db-sync                              :which-key "Reload org roam DB")
     "t"  '(:ignore t                                     :which-key "toggles")
     "tw" '(whitespace-mode                               :which-key "whitespace")
     "td" '(lem-write-switch-dictionary                   :which-key "Toggle between dictionaries")
-    "tt" '(lem/toggle-transparency                       :which-key "Toggle between transparency states")
+    "tt" '(clay-toggle-transparency                       :which-key "Toggle between transparency states")
     "tl" '(org-toggle-link-display                       :which-key "Toggle org link display")
     "tL" '(display-line-numbers-mode                     :which-key "Toggle display line numbers")
     "tf" '(auto-fill-mode                                :which-key "Toggle autofill mode")
@@ -132,19 +129,17 @@
     "d"  '(:ignore t                                     :which-key "Dired")
     "dd" '(dired                                         :which-key "Open dired")
     "dj" '(dired-jump                                    :which-key "Dired jump to current")
-    "dp" '(lem/jump-dotfiles                             :which-key "Go to dotfiles folder")
+    "dp" '(clay-jump-dotfiles                             :which-key "Go to dotfiles folder")
     "f" '(:ignore t                                      :which-key "Files")
-    "fD" '(lem/delete-this-file                          :which-key "Delete current file")
     "fd" '(find-grep-dired                               :which-key "Search for string in files in DIR")
     "ff" '(find-file                                     :which-key "Find files")
     "fr" '(recentf-open-files                            :which-key "Recent files")
-    "fR" '(lem/rename-this-file                          :which-key "Rename current file")
     "o"   '(:ignore t                                    :which-key "org mode")
     "ol"  '(:ignore t                                    :which-key "Link")
     "oli" '(org-insert-link                              :which-key "insert link")
     "ols" '(org-store-link                               :which-key "store link")
     "oN"  '(org-toggle-narrow-to-subtree                 :which-key "toggle narrow")
-    "os"  '(lem/org-search                               :which-key "search notes")
+    "os"  '(clay-org-search                               :which-key "search notes")
     "oa"  '(org-agenda                                   :which-key "Status")
     "oc"  '(org-capture t                                :which-key "Capture")
     "oC"  '(:ignore t                                    :which-key "Org clock")
@@ -153,7 +148,7 @@
     "oCi" '(org-clock-in                                 :which-key "Clock in in the current task")
     "oCI" '(org-clock-in-last                            :which-key "Clock-in the last task")
     "oCo" '(org-clock-out                                :which-key "Clock-out current clock")
-    "on"  '((lambda () (interactive) (lem/interactive-find-file org-directory)) :which-key "Notes")
+    "on"  '((lambda () (interactive) (clay-interactive-find-file org-directory)) :which-key "Notes")
     "op"  '(:ignore t                                    :which-key "Pomodoro")
     "ops" '(org-pomodoro                                 :which-key "Start org pomodoro")
     "opt" '(set-pomodoro-timer                           :which-key "Set pomodoro timer")
@@ -163,7 +158,7 @@
 
     "or"  '(:ignore t                                    :which-key "Org roam")
     "orI" '(org-roam-node-insert-immediate               :which-key "Roam insert immediately")
-    "orc" '(lem/org-roam-capture-task                    :which-key "Roam capture tast")
+    "orc" '(clay-org-roam-capture-task                    :which-key "Roam capture tast")
     "orf" '(org-roam-node-find                           :which-key "Org roam node find")
     "org" '(org-roam-ui-open                             :which-key "Open org roam graph")
     "ori" '(org-roam-node-insert                         :which-key "Org roam node insert")
@@ -179,34 +174,30 @@
     "pc" '(projectile-compile-project                    :which-key "Compile Project")
     "pd" '(projectile-dired                              :which-key "Projectile dired")
     "s" '(:ignore t                                      :which-key "sync")
-    "so" '(lem/sync-org                                  :which-key "Sync org files")
-    "sc" '(lem/sync-conf                                 :which-key "Sync config folder")
+    "so" '(clay-sync-org                                  :which-key "Sync org files")
+    "sc" '(clay-sync-conf                                 :which-key "Sync config folder")
     "sb" '(org-roam-db-sync                              :which-key "Reload org roam DB")
     "t"  '(:ignore t                                     :which-key "toggles")
     "tw" '(whitespace-mode                               :which-key "whitespace")
     "td" '(lem-write-switch-dictionary                   :which-key "Toggle between dictionaries")
-    "tt" '(lem/toggle-transparency                       :which-key "Toggle between transparency states"))
+    "tt" '(clay-toggle-transparency                       :which-key "Toggle between transparency states")
 
-              (lem/leader-key-def
-                "g"   '(:ignore t :which-key "git")
-                "gs"  'magit-status
-                "gd"  'magit-diff-unstaged
-                "gc"  'magit-branch-or-checkout
-                "gl"   '(:ignore t :which-key "log")
-                "glc" 'magit-log-current
-                "glf" 'magit-log-buffer-file
-                "gb"  'magit-branch
-                "gP"  'magit-push-current
-                "gp"  'magit-pull-branch
-                "gf"  'magit-fetch
-                "gF"  'magit-fetch-all
-                "gr"  'magit-rebase)
+  "g"   '(:ignore t :which-key "git")
+  "gs"  'magit-status
+  "gd"  'magit-diff-unstaged
+  "gc"  'magit-branch-or-checkout
+  "gl"   '(:ignore t :which-key "log")
+  "glc" 'magit-log-current
+  "glf" 'magit-log-buffer-file
+  "gb"  'magit-branch
+  "gP"  'magit-push-current
+  "gp"  'magit-pull-branch
+  "gf"  'magit-fetch
+  "gF"  'magit-fetch-all
+  "gr"  'magit-rebase
 
-              (lem/leader-key-def
-                "E" '(:ignore t :which-key "eglot")
-                "Ed" '(eldoc-doc-buffer  :which-key "Eldoc doc buffer"))
-
-              )
+  "E" '(:ignore t :which-key "eglot")
+  "Ed" '(eldoc-doc-buffer  :which-key "Eldoc doc buffer")))
 
 (provide 'clay-general)
 ;;; clay-general.el ends here
