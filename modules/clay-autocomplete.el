@@ -56,6 +56,7 @@ Disables auto-completion and popups when typing in eshell."
     (corfu-mode)))
 
 (use-package! corfu
+  :after eldoc
   :bind (:map corfu-map
               ("C-j" . corfu-next)
               ("C-k" . corfu-previous)
@@ -175,6 +176,7 @@ Does not save to system clipboard."
 
 
 (use-package! consult-yasnippet
+  :after (consult yasnippet)
   :defer t
   :bind
   ([remap yas-insert-snippet] . consult-yasnippet))

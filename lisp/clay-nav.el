@@ -15,12 +15,12 @@
   (interactive)
   (find-file (expand-file-name "init.el" private-emacs-directory)))
 
-(defun clay-go-clay-modules ()
+(defun clay-go-emacs-modules ()
   "Search files in the modules directories in `private-emacs-directory'."
   (interactive)
   (clay--interactive-find-file (expand-file-name "modules/" private-emacs-directory)))
 
-(defun clay-go-clay-internal-modules ()
+(defun clay-go-emacs-internal-modules ()
   "Search files in the lisp directories in `private-emacs-directory'."
   (interactive)
   (clay--interactive-find-file (expand-file-name "lisp/" private-emacs-directory)))

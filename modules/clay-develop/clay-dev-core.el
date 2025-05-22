@@ -45,6 +45,18 @@ This includes buffers not visiting a file, or buffers whose names match entries 
   :type 'boolean
   :group 'clay-dev)
 
+;; https://github.com/progfolio/elpaca/issues/398
+(unload-feature 'eldoc t)
+(setq custom-delayed-init-variables '())
+(defvar global-eldoc-mode nil)
+
+(elpaca eldoc
+  (require 'eldoc)
+  (global-eldoc-mode))
+
+
+(use-package! jsonrpc :remote (:wait t))
+(use-package! xref :remote t)
 ;; There is an error with eglot and project
 ;; https://emacs.stackexchange.com/a/81908
 (use-package! project :remote t)
