@@ -1,4 +1,26 @@
-;; -*- lexical-binding: t -*-
+;;; clay-org.el --- base configuration for org mode  -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  Lucas Elvira Martín
+
+;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
+;; Keywords: text
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;; Code:
 
 (defgroup clay-org nil
           "Group for org settings."
@@ -63,7 +85,7 @@
 ;;; org-mode configuration
 
 (defun clay-org-apply-config ()
-  "Synchronize org-mode settings with `clay-org` variables."
+  "Synchronize `org-mode' settings with `clay-org' variables."
   (setq org-directory clay-org-directory)
   (setq org-default-notes-file (expand-file-name clay-org-default-notes-file clay-org-directory))
   (setq org-agenda-files (mapcar (lambda (f)
@@ -73,13 +95,12 @@
 
 
 (defun clay--org-mode-hooks ()
-  "hook to run when entering `org-mode'."
+  "Hook to run when entering `org-mode'."
   (variable-pitch-mode)
   (visual-line-mode 1)
-  (setq evil-auto-indent nil)
-  (diminish org-indent-mode))
+  (setq evil-auto-indent nil))
 
-(defun clay-start-task () 
+(defun clay-start-task ()
   "Start a clock when a task change the state from TOOD to IN PROGRESS."
     (when (string= (org-get-todo-state) "STRT")
            (org-clock-in))
@@ -89,8 +110,7 @@
 
 (defun clay--org-setup-font-appearance ()
   "Set font and indentation settings for Org faces."
-  (require 'org-indent)
-  (set-face-attribute 'org-block           nil :foreground nil :inherit 'fixed-pitch)
+  ; (set-face-attribute 'org-block           nil :foreground nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-table           nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-formula         nil :inherit 'fixed-pitch)
   (set-face-attribute 'org-code            nil :inherit '(shadow fixed-pitch))
@@ -295,7 +315,6 @@ BEGIN and END are regexps which define the line range to use."
               (org-archive-save-context-info '(time category itags))
               :config
               (clay-org-apply-config)
-              (clay--org-setup-font-appearance)
               (clay--org-init-appearance)
               (clay--org-init-agenda)
               (clay--org-setup-capture)
@@ -356,6 +375,19 @@ BEGIN and END are regexps which define the line range to use."
                 (insert "#+auto_tangle: t ")
                 (evil-force-normal-state)))
 
+(use-package! org-indent
+              :remote (:type built-in)
+              :config
+              (custom-set-faces
+               '(org-level-1 ((t (:inherit outline-1 :height 1.1))))
+               '(org-level-2 ((t (:inherit outline-2 :height 1.1))))
+               '(org-level-3 ((t (:inherit outline-3 :height 1.1))))
+               '(org-level-4 ((t (:inherit outline-4 :height 1.1))))
+               '(org-level-5 ((t (:inherit outline-5 :height 1.1))))
+               '(org-level-6 ((t (:inherit outline-5 :height 1.1))))
+               '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
+              (clay--org-setup-font-appearance))
+
 (when clay-org-notify?
   (use-package! org-wild-notifier
                 :after org
@@ -380,5 +412,5 @@ BEGIN and END are regexps which define the line range to use."
 (when clay-org-roam?
   (require 'clay-org-roam))
 
-
 (provide 'clay-org)
+;;; clay-org.el ends here

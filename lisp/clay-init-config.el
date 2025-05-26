@@ -61,7 +61,7 @@
                    (> (length (shell-command-to-string "pip --version | grep 'python 3'")) 0)))
           "Do we have pip3?")
 
-(defconst git-dir "~/Documents/git/"
+(defconst git-dir clay-git-dir
           "Path for the default git projects.")
 
 (defconst lem/website_folder (expand-file-name "hugo_website" git-dir)

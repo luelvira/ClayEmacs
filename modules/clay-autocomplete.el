@@ -56,6 +56,8 @@ Disables auto-completion and popups when typing in eshell."
     (corfu-mode)))
 
 (use-package! corfu
+  :hook ((prog-mode . corfu-mode)
+         (minibuffer-setup . corfu-enable-in-minibuffer))
   :after eldoc
   :bind (:map corfu-map
               ("C-j" . corfu-next)
@@ -63,28 +65,25 @@ Disables auto-completion and popups when typing in eshell."
               ("TAB" . corfu-insert))
   :custom
   (corfu-auto t)
+  (corfu-cycle t)
   (corfu-preview-current nil)
   (corfu-quit-at-boundary t)
   (corfu-quit-no-match t)
+  (corfu-separator ?\s)
+  (corfu-quit-no-match 'separator)
   :init
-  (global-corfu-mode)
-  :config
-  (setq corfu-cycle t
-        corfu-auto-delay 0.24
-        corfu-separator ?\s
-        corfu-preselect-first nil
-        corfu-preselect 'prompt
-        tab-always-indent 'complete)
-
-
-  (defun corfu-enable-in-minibuffer ()
+(defun corfu-enable-in-minibuffer ()
     "Enable Corfu in the minibuffer if `completion-at-point' is bound."
     (when (where-is-internal #'completion-at-point (list (current-local-map)))
       (setq-local corfu-echo-delay nil ;; Disable automatic echo and popup
                   corfu-popupinfo-delay nil)
       (corfu-mode 1)))
-
-  (add-hook 'minibuffer-setup-hook #'corfu-enable-in-minibuffer))
+  (global-corfu-mode)
+  :config
+  (setq corfu-auto-delay 0.24
+        corfu-preselect-first nil
+        corfu-preselect 'prompt
+        tab-always-indent 'complete))
 
 (defun clay-minibuffer-backward-kill (arg)
     "Delete up to the parent directory or previous word in minibuffer.
@@ -165,6 +164,7 @@ Does not save to system clipboard."
     (consult-goto-line)))
 
 (use-package! consult-dir
+  :remote (:type git :host github :repo "karthink/consult-dir")
   :after consult
   :remote
   :bind (([remap list-directory] . consult-dir)

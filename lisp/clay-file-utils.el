@@ -1,4 +1,27 @@
-;;; clay-file-utils.el -*- lexical-binding: t; -*-
+;;; clay-file-utils.el --- file utilities            -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2025  Lucas Elvira Martín
+
+;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
+;; Keywords:
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;;; Code:
+
 
 (defun clay-delete-this-file ()
   "Delete the current file and kill the buffer."
@@ -37,8 +60,8 @@
 
 (clay-map!
  "fD" '(clay-delete-this-file :which-key "Delete current file")
- "fR" '(clay-rename-this-file                          :which-key "Rename current file")
- )
+ "fR" '(clay-rename-this-file :which-key "Rename current file"))
 
 
 (provide 'clay-file-utils)
+;;; clay-file-utils.el ends here

@@ -41,7 +41,8 @@
   ;; Enable :elpaca use-package keyword.
   (elpaca-use-package-mode)
   ;; Assume :elpaca t unless otherwise specified.
-  (setq elpaca-use-package-by-default t))
+  (setq elpaca-use-package-by-default t
+        use-package-always-ensure t))
 
 (provide 'clay-bootstrap-elpaca)
 ;; boostrap-elpaca.el ends here

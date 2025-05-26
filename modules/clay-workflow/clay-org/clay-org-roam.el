@@ -3,7 +3,7 @@
 ;; Copyright (C) 2025  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -32,11 +32,15 @@
 
 (defcustom clay-org-roam-directory "roam"
   "Main directory where org roam files are stored relative to `org-directory'."
+  :set (lambda (k v)
+         (set-default k v)
+         (setq org-roam-directory (expand-file-name v org-directory)))
   :group 'clay-org-roam
   :type 'directory)
 
 (defcustom clay-bibliography-files '()
   "List of the .bib to get the bibliography relatives to `org-directory'."
+  ;; :set (lambda (k v) (set-default k (mapcar (lambda (file) (expand-file-name file org-directory)) v)))
   :group 'clay-org-roam
   :type '(repeat string))
 
@@ -61,7 +65,7 @@
 
 ;;;###autoload
 (defun clay-org-roam-filter-by-tag (tag-name)
-  "Return a predicate that checks if a node has TAG-NAME."
+  "Return a predicate that check if a node has TAG-NAME."
   (lambda (node)
     (member tag-name (org-roam-node-tags node))))
 
@@ -185,19 +189,24 @@ If P-VISIT is non-nil, point is moved to the destination."
 
 (use-package! citar
               :after org-roam
+              :preface
+              (defun clay--expand-bibliography-path (files)
+                "Given a list of fILES, return a new list with the `org-directory' prefix."
+                (mapcar (lambda (file)
+                          (expand-file-name file org-directory)) files))
               :custom
               (org-cite-insert-processor 'citar)
               (org-cite-follow-processor 'citar)
               (org-cite-activate-processor 'citar)
-              (org-cite-global-bibliography clay-bibliography-files)
-              (citar-bibliography clay-bibliography-files)
+              (org-cite-global-bibliography (clay--expand-bibliography-path clay-bibliography-files))
+              (citar-bibliography (clay--expand-bibliography-path clay-bibliography-files))
               :config
               (setq citar-templates
                     '((main . "${author editor:30%sn}     ${date year issued:4}     ${title:48}")
                       (suffix . "          ${=key= id:15}    ${=type=:12}    ${tags keywords:*}")
                       (preview . "${author editor:%etal} (${year issued date}) ${title}, ${journal journaltitle publisher container-title collection-title}.\n")
                       (note . "Notes on ${author editor:%etal}, ${title}"))
-                    bibtex-completion-bibliography clay-bibliography-files))
+                    bibtex-completion-bibliography (clay--expand-bibliography-path clay-bibliography-files)))
 
 
 (use-package! citar-org-roam
@@ -242,7 +251,7 @@ If P-VISIT is non-nil, point is moved to the destination."
      (format
       "\\newacronym{%s}{%s}{%s}\n"
       label abbrv full)
-     nil (expand-file-name clay-org-roam-glossary-file clay-org-roam-directory) 'append)))
+     nil (expand-file-name clay-org-roam-glossary-file org-roam-directory) 'append)))
 
 (use-package! org-roam-ui
               :remote

@@ -32,12 +32,13 @@ Choose between `elpaca` and `straight`."
   :group 'clay-package)
 
 (if (eq system-type 'gnu/linux)
-  (cond
-    ((eq clay-preferred-package-manager 'straight)
-     (require 'clay-bootstrap-straight))
-     
-    ((eq clay-preferred-package-manager 'elpaca)
-      (require 'clay-bootstrap-elpaca)))
+    (progn
+      (cond
+       ((eq clay-preferred-package-manager 'straight)
+        (require 'clay-bootstrap-straight))
+       ((eq clay-preferred-package-manager 'elpaca)
+        (require 'clay-bootstrap-elpaca)))
+      (require 'package))
   ;; Other OSs (non-GNU/Linux)
   (progn
     (require 'package)
@@ -62,25 +63,6 @@ Choose between `elpaca` and `straight`."
       (require 'bind-key))))
 
 
-(defun clay--split-args (args)
-  (let ((result '()))
-    (while args
-      (let ((key (car args)))
-        (setq args (cdr args))
-        (cond
-         ((and (keywordp key)
-               (memq key '(:config :init :hook :custom))) ; añade más si necesitas
-          (let ((body '()))
-            (while (and args (not (keywordp (car args))))
-              (push (pop args) body))
-            (setq result (append result (list key (nreverse body))))))
-         ((keywordp key)
-          (let ((val (pop args)))
-            (setq result (append result (list key val)))))
-         (t
-          (message "Warning: argumento inesperado %s" key)))))
-    result))
-
 (defmacro use-package! (name &rest args)
   "Wrapper for `use-package' that convert :remote to :straight or :ensure.
 use :ensure as an alternative to :elpaca.
@@ -100,7 +82,7 @@ NAME and ARGS work same as with `use-pacakge'"
             (push val translated-args)))
          ((or
            (eq key :straight)
-           (eq key :ensure)
+           ;(eq key :ensure)
            (eq key :elpaca))
           (message "Warning you shouldn't use %s with use-package %s" key name)
           (push pkg-key translated-args)
@@ -112,14 +94,6 @@ NAME and ARGS work same as with `use-pacakge'"
     (setq translated-args (nreverse translated-args))
 
     `(use-package ,name ,@translated-args)))
-
-(defmacro clay-map! (&rest bindings)
-  "Wrapper to declare multiple keybindings using a custom general.el definer,
-within `with-eval-after-load 'clay-general`.
-Each BINDING is (KEY CMD DESC)."
-    `(with-eval-after-load 'clay-general
-       (when (fboundp 'clay-leader-key-def)
-      (apply #'clay-leader-key-def (list ,@bindings)))))
 
 (provide 'init-package)
 ;;; init-package.el ends here

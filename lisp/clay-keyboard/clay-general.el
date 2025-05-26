@@ -24,8 +24,17 @@
 
 ;;; Code:
 
+(defmacro clay-map! (&rest bindings)
+  "Wrapper to declare multiple keybindings using a general definer.
+within `with-eval-after-load 'clay-general'.
+Each BINDINGS is (KEY CMD DESC)."
+    `(with-eval-after-load 'clay-general
+       (when (fboundp 'clay-leader-key-def)
+         (message "running clay-map!")
+      (clay-leader-key-def ,@bindings))))
+
 (use-package! general
-  :demand t
+  :ensure t
   :config
   (general-evil-setup t)
   (general-create-definer clay-leader-key-def
@@ -173,9 +182,6 @@
     "pF" '(consult-ripgrep                               :which-key "Rip grep")
     "pc" '(projectile-compile-project                    :which-key "Compile Project")
     "pd" '(projectile-dired                              :which-key "Projectile dired")
-    "s" '(:ignore t                                      :which-key "sync")
-    "so" '(clay-sync-org                                  :which-key "Sync org files")
-    "sc" '(clay-sync-conf                                 :which-key "Sync config folder")
     "sb" '(org-roam-db-sync                              :which-key "Reload org roam DB")
     "t"  '(:ignore t                                     :which-key "toggles")
     "tw" '(whitespace-mode                               :which-key "whitespace")

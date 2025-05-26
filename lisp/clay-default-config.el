@@ -48,8 +48,8 @@
   (setq-default fringes-outside-margins t))
 
 ;; Line numbers
-(setq-default display-line-numbers-width 0
-              display-line-numbers-widen nil)
+(setq-default display-line-numbers-width 3
+              display-line-numbers-widen t)
 (column-number-mode 1)
 
 (provide 'clay-default-config)

@@ -1,5 +1,27 @@
-;;; clay-ui.el -*- lexical-binding: t -*-
+;;; clay-ui.el --- Default GUI                       -*- lexical-binding: t; -*-
 
+;; Copyright (C) 2025  Lucas Elvira Martín
+
+;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
+;; Keywords:
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+
+;;; Code:
 
 (defgroup clay-gui nil
           "Customization group for the interface."
@@ -51,7 +73,7 @@
                   (clay-update-keyword-font-face)))
 
 (defcustom clay-enable-ligatures nil
-           "Non-nil to enable ligatures in prog-mode."
+           "Non-nil to enable ligatures in `prog-mode'."
            :type 'boolean
            :group 'clay-gui
            :set (lambda (_ v)
@@ -87,8 +109,8 @@
 
 ;; Install package
 
-
 (use-package! ligature
+  :disabled
   :config
  ;; Enable the "www" ligature in every possible major mode
   (ligature-set-ligatures 't '("www"))
@@ -118,7 +140,6 @@
   (load-theme 'doom-dracula t))
 
 (use-package! mood-line
-  :remote t
   :config
   (mood-line-mode)
   :custom
@@ -139,6 +160,10 @@
   ;; (set-face-attribute 'show-paren-match-expression nil :background "#363e4a")
   (show-paren-mode 1))
 
+(use-package! vi-tilde-fringe
+              :remote (:host github :repo "syl20bnr/vi-tilde-fringe")
+              :hook ((text-mode prog-mode conf-mode) . vi-tilde-fringe-mode))
+
 (defun clay-set-background ( &optional frame)
   "The default value of transparency used for the current FRAME."
   (unless is-termux
@@ -158,23 +183,25 @@ This is required when using the daemon mode"
                       :height 110)
   (set-face-attribute 'fixed-pitch nil
                       :inherit 'default
-                      :weight 'medium
+                      :weight 'light
                       :height 1.0
                       :family clay-fixed-font)
   (set-face-attribute 'variable-pitch nil
                       :family  clay-variable-font
                       :inherit 'default
-                      :weight 'regular)
-  (set-face-attribute 'line-number nil
-                      :family   clay-fixed-font
-                      :inherit 'default
-                      :weight  'regular
-                      :slant 'normal)
-  (set-face-attribute 'line-number-current-line nil
-                      :family clay-fixed-font
-                      :inherit 'default
-                      :weight 'regular
-                      :slant 'normal))
+                      :weight 'normal
+                      :height 1.0)
+;;  (set-face-attribute 'line-number nil
+;;                      :family   clay-fixed-font
+;;                      :inherit 'default
+;;                      :weight  'regular
+;;                      :slant 'normal)
+;;  (set-face-attribute 'line-number-current-line nil
+;;                      :family clay-fixed-font
+;;                      :inherit 'default
+;;                      :weight 'regular
+;;                      :slant 'normal)
+  )
 
 
 (defun clay-set-fonts (frame)
@@ -197,18 +224,15 @@ This is required when using the daemon mode"
   (add-hook 'after-init-hook #'clay--init-ui))
 
 
-(add-hook 'prog-mode-hook #'hl-line-mode)
-(add-hook 'conf-mode-hook #'hl-line-mode)
+(use-package! hl-line
+              :remote (:type built-in)
+              :hook ((prog-mode conf-mode text-mode) . hl-line-mode))
 
 (dolist (mode '(text-mode-hook
                  prog-mode-hook
                  conf-mode-hook))
   (add-hook mode (lambda ()
-                   (display-line-numbers-mode 1))))
-
-(use-package! vi-tilde-fringe
-              :remote (:host github :repo "syl20bnr/vi-tilde-fringe")
-              :hook ((text-mode prog-mode conf-mode) . vi-tilde-fringe-mode))
+                   (display-line-numbers-mode +1))))
 
 (provide 'clay-ui)
 ;;; clay-ui.el ends here

@@ -24,7 +24,7 @@
 ;;; Code:
 
 (defcustom clay-dev-check-syntax? t
-  "non-nil to load and configure syntax checking."
+  "Non-nil to load and configure syntax checking."
   :type 'boolean
   :group 'clay-dev)
 
@@ -45,21 +45,27 @@ This includes buffers not visiting a file, or buffers whose names match entries 
   :type 'boolean
   :group 'clay-dev)
 
-;; https://github.com/progfolio/elpaca/issues/398
-(unload-feature 'eldoc t)
-(setq custom-delayed-init-variables '())
-(defvar global-eldoc-mode nil)
+(if (eq clay-preferred-package-manager 'elpaca)
+  ;; https://github.com/progfolio/elpaca/issues/398
+  (progn
+    (unload-feature 'eldoc t)
+    (setq custom-delayed-init-variables '())
+    (defvar global-eldoc-mode nil)
+    (elpaca eldoc
+            (require 'eldoc)
+            (global-eldoc-mode))
+    (use-package! jsonrpc :remote (:wait t))
+    (use-package! xref :remote t))
+  (use-package! eldoc
+                :remote (:type built-in)
+                :hook (eglot-managed-mode . eldoc-mode)
+                :custom
+                (eldoc-echo-area-use-multiline-p nil)))
 
-(elpaca eldoc
-  (require 'eldoc)
-  (global-eldoc-mode))
 
-
-(use-package! jsonrpc :remote (:wait t))
-(use-package! xref :remote t)
 ;; There is an error with eglot and project
 ;; https://emacs.stackexchange.com/a/81908
-(use-package! project :remote t)
+(use-package! project :remote (:type built-in))
 
 (use-package! projectile
   :remote t
@@ -83,9 +89,9 @@ This includes buffers not visiting a file, or buffers whose names match entries 
 
 (use-package! flymake
               :if (and clay-dev-check-syntax? clay-dev-flymake?)
-              :remote (:host github :repo "emacs-straight/flymake")
-              :hook ((prog-mode . flymake-mode)
-                     (text-mode . flymake-mode))
+              ; :remote (:host github :repo "emacs-straight/flymake")
+              :remote (:type built-in)
+              :hook ((prog-mode text-mode) . flymake-mode)
               :config
               (setq flymake-fringe-indicator-position 'right-fringe))
 

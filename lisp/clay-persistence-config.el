@@ -1,5 +1,24 @@
 ;;; clay-littering-config.el -*- lexical-binding: t; -*-
+
+
+
+(setq backup-by-copying t ;; instead of renaming current file
+      create-lockfiles nil
+      make-backup-files t
+      version-control t
+      delete-old-versions  t
+      kept-new-versions 6   ; how many of the newest versions to keep
+      kept-old-versions 5
+      ;; Autosave
+      auto-save-default nil ;; Instruct auto-save-mode to save to the current file, not a backup file
+      auto-save-include-big-deletions t
+      auto-save-timeout 20       ; Number of seconds between auto-save
+      auto-save-interval 200    ; Number of keystrokes between auto-saves
+
+      )
+
 (use-package! no-littering
+              :demand t
               :remote t
               :init
               (setq no-littering-etc-directory (expand-file-name "etc/" user-emacs-directory)
@@ -13,25 +32,12 @@
                   (make-directory dir t)))
               :config
               ;; Backups
-              (setq backup-by-copying t ;; instead of renaming current file
-                    make-backup-files nil
-                    version-control t 
-                    delete-old-versions  t
-                    kept-new-versions 6   ; how many of the newest versions to keep
-                    kept-old-versions 5
-                    create-lockfiles nil
-                    backup-directory-alist
+              (setq backup-directory-alist
                     `(("\\`/tmp/" . nil)
                       ("\\`/dev/shm/" . nil)
                       ("." . ,(no-littering-expand-var-file-name "backup/"))))
-              ;; Autosave
-              (setq auto-save-default nil ;; Instruct auto-save-mode to save to the current file, not a backup file
-                    auto-save-include-big-deletions t
-                    auto-save-timeout 20       ; Number of seconds between auto-save
-                    auto-save-interval 200    ; Number of keystrokes between auto-saves
-                    ; Prefix for generating auto-save-list-file-name
-                    auto-save-list-file-prefix (no-littering-expand-var-file-name "auto-save-list/.saves-"))
-              (setq-default auto-save-default nil)
+              ; Prefix for generating auto-save-list-file-name
+              (setq auto-save-list-file-prefix (no-littering-expand-var-file-name "auto-save-list/.saves-"))
               ;; Bookmark
               (setq bookmark-default-file (no-littering-expand-var-file-name "bookmarks"))
               ;; remote conexions

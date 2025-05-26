@@ -24,83 +24,17 @@
 
 ;;; Code:
 
-;;;###autoload
-(defun clay-dev-elisp-non-package-mode ()
-  (setq-local byte-compile-warnings '(not free-vars noruntime unresolved)))
-
-;;;###autoload
-(defun clay-dev-elisp-flymake-load-path (orig-fn &rest args)
-  (let ((elisp-flymake-byte-compile-load-path
-         (append elisp-flymake-byte-compile-load-path load-path)))
-    (apply orig-fn args)))
-
-;;;###autoload
-(defun clay-dev-elisp-disable-native-elisp-flymake ()
-  (setq-local flymake-diagnostic-functions nil))
-
-;;;###autoload
-(defun clay-dev--setup-elisp-flymake ()
-  (add-hook 'flymake-diagnostic-functions #'clay-dev--custom-elisp-flymake nil t))
-
-(defvar clay-elisp-use-reduced-flymake t
-  "If non-nil, use a reduced Flymake backend for Emacs Lisp buffers.")
-
-(defun clay-elisp-reduced-flymake-byte-compile (report-fn &rest _args)
-  "Reduced Flymake backend for Emacs Lisp that only performs byte compilation."
-  (when (and buffer-file-name (file-exists-p buffer-file-name))
-    (let ((source (current-buffer))
-          (diagnostics nil))
-      (with-temp-buffer
-        (condition-case err
-            (progn
-              (insert-file-contents buffer-file-name)
-              (emacs-lisp-mode)
-              (byte-compile-from-buffer (current-buffer)))
-          (error
-           (let ((msg (error-message-string err)))
-             (push (flymake-make-diagnostic source (point-min) (point-max)
-                                            :error msg)
-                   diagnostics)))))
-      (funcall report-fn diagnostics))))
-
-(define-minor-mode clay-elisp--flymake-lite-mode
-  "Minor mode to enable a reduced Flymake backend for Emacs Lisp buffers."
-  :lighter " FlymakeLite"
-  (if clay-elisp--flymake-lite-mode
-      (progn
-        (remove-hook 'flymake-diagnostic-functions #'elisp-flymake-checkdoc t)
-        (remove-hook 'flymake-diagnostic-functions #'elisp-flymake-byte-compile t)
-        (add-hook 'flymake-diagnostic-functions #'clay-elisp-reduced-flymake-byte-compile nil t))
-    (remove-hook 'flymake-diagnostic-functions #'clay-elisp-reduced-flymake-byte-compile t)
-    (add-hook 'flymake-diagnostic-functions #'elisp-flymake-checkdoc nil t)
-    (add-hook 'flymake-diagnostic-functions #'elisp-flymake-byte-compile nil t)))
-
-
-;;;###autoload
-(defun clay-dev--setup-elisp-flymake ()
-  (add-hook 'emacs-lisp-mode-hook
-            (lambda ()
-              (when
-                  (and clay-dev-flymake?
-                       clay-dev-check-syntax?
-                       clay-elisp-use-reduced-flymake)
-                (clay-elisp--flymake-lite-mode 1)))))
-
-;;;###autoload
-(defun clay-dev-elisp--init-mode ()
-  (message "Enable flymake-mode")
-  (clay-dev-elisp-disable-native-elisp-flymake)
-  (clay-dev--setup-elisp-flymake)
-  (flymake-mode 1))
+(use-package! package-lint)
+(use-package! package-lint-flymake
+              :hook (emacs-lisp-mode . package-lint-flymake-setup))
 
 (use-package! elisp-mode
               :hook ((emacs-lisp-mode . clay-dev-elisp--init-mode)
                      (emacs-lisp-mode . clay-dev-elisp-non-package-mode))
-              :remote nil
+              :remote (:type built-in)
               :config
               (setq flymake-diagnostic-functions nil)
-              (setq evil-shift-width 2)
-              (advice-add 'elisp-flymake-byte-compile :around #'clay-dev-elisp-flymake-load-path))
+              (setq evil-shift-width 2))
 
 (use-package rainbow-delimiters
   :init (setq rainbow-delimiters-max-face-count 4)

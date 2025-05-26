@@ -81,27 +81,36 @@
   :type 'boolean
   :group 'clay-langs)
 
+(defcustom clay-elisp? nil
+  "Enable support for elisp language."
+  :type 'boolean
+  :group 'clay-langs)
+
 ;; Load always these base modules (non-optional)
-(use-package! clay-dev-core     :remote nil)
-(use-package! clay-dev-lsp      :remote nil)
-(use-package! clay-dev-enhancements :remote nil)
-(use-package! clay-dev-treesitter   :remote nil)
-(use-package! clay-version-control :remote nil)
+(require 'clay-dev-core)
+(require 'clay-dev-lsp)
+(require 'clay-dev-enhancements)
+(require 'clay-dev-treesitter)
+(require 'clay-version-control)
 
-(use-package! clay-python
-              :when clay-python?
-              :remote nil)
+(when clay-python?
+  (require 'clay-python))
 
-(use-package! clay-web
-              :when clay-web?
-              :remote nil)
+(when clay-web?
+  (require 'clay-web))
 
-(use-package! clay-elisp
-              :remote nil)
+(when clay-elisp?
+  (require 'clay-elisp))
 
-(when clay-haskell? (use-package! clay-haskell: :remote nil))
-(when clay-java? (use-package! clay-java :remote nil))
-(when clay-uml? (use-package! clay-uml :remote nil))
+(when clay-haskell?
+  (require 'clay-haskell))
+
+(when clay-java?
+  (require 'clay-java))
+
+(when clay-uml?
+  (require 'clay-uml))
+
 
 (provide 'clay-develop)
 ;;; clay-develop.el ends here

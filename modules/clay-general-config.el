@@ -23,7 +23,6 @@
 
 (setq visible-bell t)
 
-;; Reduce the clutter in the fringes; we'd like to reserve that space for more
 (setq indicate-buffer-boundaries nil
       indicate-empty-lines nil
       frame-title-format "%b - GNU Emacs"

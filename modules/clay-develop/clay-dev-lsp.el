@@ -24,30 +24,27 @@
 
 ;;; Code:
 
-
-
 (use-package! eglot
-              :remote t
-              :commands eglot eglot-ensure
-              :init
-              (setq eglot-sync-connect 1
-                    eglot-auto-display-help-buffer nil
-                    eldoc-echo-area-use-multiline-p t
-                    eglot-autoshutdown t)
-              (setq-default eglot-workspace-configuration
-                            '((haskell
-                                (plugin
-                                  (stan
-                                    (globalOn . :json-false))))))
-              :hook((python-mode . eglot-ensure)
-                    (python-ts-mode . eglot-ensure)
-                    (web-mode . eglot-ensure)
-                    (typescript-mode . eglot-ensure)
-                    (js2-mode . eglot-ensure)
-                    (typescript-ts-mode . eglot-ensure)
-                    (tsx-ts-mode-mode . eglot-ensure)
-                    (haskell-mode . eglot-ensure)
-                    (eglot-managed-mode . clay/eglot-disable-flymake-legacy-backend)))
+  :remote (:type built-in)
+  :commands eglot eglot-ensure
+  :init
+  (setq eglot-sync-connect 1
+        eglot-auto-display-help-buffer nil
+        eldoc-echo-area-use-multiline-p t
+        eglot-autoshutdown t)
+  (setq-default eglot-workspace-configuration
+                '((haskell
+                   (plugin
+                    (stan
+                     (globalOn . :json-false))))))
+  :hook(
+        ((python-mode python-ts-mode) . eglot-ensure)
+        (web-mode . eglot-ensure)
+        ((typescript-mode typescript-mode) . eglot-ensure)
+        (js2-mode . eglot-ensure)
+        ((tsx-mode-mode tsx-ts-mode-mode) . eglot-ensure)
+        (haskell-mode . eglot-ensure)
+        (eglot-managed-mode . clay/eglot-disable-flymake-legacy-backend)))
 
 (defun clay/eglot-disable-flymake-legacy-backend ()
   "Disable `flymake-proc-legacy-flymake' when eglot is active."

@@ -72,25 +72,25 @@
 (require 'init-package)
 (require 'clay-persistence-config)
 (require 'clay-keyboard)
-(require 'clay-file-utils)
-;;(use-package! clay-file-utils
-;;  :after 'clay-keyboard
-;;  :config
-;;    (message "clay-leader-key-def %s" (fboundp 'clay-leader-key-def)))
 
 ;;;; Core initialization
 (require 'clay-general-config)
 (require 'clay-default-config)
+(require 'clay-nav)
 
-;;;; Interface and UX
+;; Core functions
+(require 'clay-file-utils)
+(require 'clay-sync)
+
+;;;;;; Interface and UX
 (require 'clay-ui)
-
+;;
 (require 'clay-dired)
 (require 'clay-autocomplete)
-
+;;
 (require 'clay-develop)
 (require 'clay-vterm)
-;; (require 'clay-write)
+;;;; (require 'clay-write)
 (require 'clay-workflow)
 
 (provide 'init)
