@@ -43,6 +43,11 @@
     :type 'string
     :group 'clay-gui)
 
+(defcustom clay-default-theme nil
+  "The name of the theme to be used in the current session."
+  :type 'symbol
+  :group 'clay-gui)
+
 
 (defun clay-update-comment-font-face ()
   (if clay-ui-italic-comment-face
@@ -121,10 +126,10 @@
  (global-ligature-mode t))
 
 (use-package! nerd-icons :defer t)
+
 (use-package! nerd-icons-dired
     :defer t
-    :hook
-    (dired-mode . nerd-icons-dired-mode))
+    :hook (dired-mode . nerd-icons-dired-mode))
 
 (use-package! nerd-icons-completion
     :defer t
@@ -137,7 +142,7 @@
         doom-themes-enable-italic t) ; if nil, italics is universally disabled
   (doom-themes-visual-bell-config)
   (doom-themes-org-config)
-  (load-theme 'doom-dracula t))
+  (load-theme clay-default-theme t))
 
 (use-package! mood-line
   :config

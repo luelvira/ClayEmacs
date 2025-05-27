@@ -300,7 +300,7 @@ BEGIN and END are regexps which define the line range to use."
   (consult-ripgrep org-directory)))
 
 (use-package! org
-              :remote t
+              :remote (:type git :host github :repo "emacs-straight/org-mode")
               :hook ((org-mode . clay--org-mode-hook)
                      (org-mode . org-indent-mode)
                      (before-save . save-and-update-includes)
