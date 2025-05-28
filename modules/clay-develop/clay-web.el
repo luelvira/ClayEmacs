@@ -36,26 +36,6 @@ Default value is 2 following the standards."
   :group 'lem
   :type 'number)
 
-(defcustom lem/js-indentation-value 2
-  "The default value for indent javascript and typescript files."
-  :set (lambda (k v)
-         (set-default k v)
-         (when (fboundp 'lem/js-indentation)
-           (lem/js-indentation)))
-  :group 'lem
-  :type 'number)
-
-
-(defun lem/js-indentation ()
-  "Setup the default indent for javascript files."
-  (setq js-chain-indent t
-        ;; These have become standard in the JS community
-        js-indent-level lem/js-indentation-value
-        js2-basic-offset js-indent-level
-        typescript-indent-level js-indent-level
-        evil-shift-width js-indent-level
-        tab-width js-indent-level))
-
 (defun lem/web-indentation ()
   "Setup the indentation for the web mode."
   (setq web-mode-markup-indent-offset lem/web-indentation-value ;; for html
@@ -83,12 +63,6 @@ Default value is 2 following the standards."
    ;; Use js2-mode for Node scripts
    (add-to-list 'magic-mode-alist '("#!/usr/bin/env node" . js2-mode)))
 
-(use-package! prettier-js
-  :custom (prettier-js-args '("--print-width" "100"
-                              "--single-quote" "true"
-                              "--trailing-comma" "all"))
-  :config
-  (setq prettier-js-show-errors nil))
 
 (use-package! js2-refactor
   :hook ((js2-mode rjsx-mode) . js2-refactor-mode))
@@ -98,21 +72,6 @@ Default value is 2 following the standards."
   :config
   (lem/web-indentation))
 
-(use-package! typescript-mode
-  :disabled clay-ts?
-  :after flycheck
-  :hook ((typescript-mode . prettier-js-mode))
-  :mode ("\\.\\(ts\\|tsx\\)\\'")
-  :custom
-  ;; TSLint is depreciated in favor of ESLint.
-  (flycheck-disable-checker 'typescript-tslint)
-  (lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file" "/dev/stderr"))
-  (typescript-indent-level lem/js-indentation-value)
-  :config
-  (flycheck-add-mode 'javascript-eslint 'typescript-mode))
-
-(use-package! rjsx-mode
-  :disabled clay-react?)
 
 
 (use-package! simple-httpd :defer t)

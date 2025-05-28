@@ -42,7 +42,7 @@
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
-  (fringe-mode nil)
+  (fringe-mode 4)
   (tooltip-mode -1)
   (menu-bar-mode -1)
   (setq-default fringes-outside-margins t))
@@ -53,4 +53,4 @@
 (column-number-mode 1)
 
 (provide 'clay-default-config)
-;;; clay-default-config-el ends here
+;;; clay-default-config.el ends here

@@ -184,7 +184,10 @@ If P-VISIT is non-nil, point is moved to the destination."
                   (message "Warning: %s don't exists" org-roam-directory))
               (cl-defmethod org-roam-node-date
                 ((node org-roam-node))
-                (format-time-string "%Y-%m-%d" (org-roam-node-file-mtime node))))
+                (format-time-string "%Y-%m-%d" (org-roam-node-file-mtime node)))
+              (clay-org-roam-refresh-agenda-list)
+
+              )
 
 
 (use-package! citar

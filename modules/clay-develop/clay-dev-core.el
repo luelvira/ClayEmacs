@@ -125,5 +125,21 @@ This includes buffers not visiting a file, or buffers whose names match entries 
               :config
               (global-activity-watch-mode))
 
+(use-package! consult-dash
+              :commands consult-dash
+              :init
+              (setq consult-dash-docsets-dir "~/.local/share/Zeal/Zeal/docsets"
+                    consult-dash-browser-func #'browse-url))
+
+
+;;;###autoload
+(defun clay-set-docsets (mode &rest docsets)
+  "Asociate DOCSETS to a major MODE for `consult-dash'."
+  (add-hook (intern (format "%s-hook" mode))
+            (lambda ()
+              (setq-local consult-dash-docsets docsets))))
+
+(use-package! rainbow-delimiters)
+
 (provide 'clay-dev-core)
 ;;; clay-dev-core.el ends here

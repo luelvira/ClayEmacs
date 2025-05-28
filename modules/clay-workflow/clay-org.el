@@ -94,12 +94,6 @@
   (setq org-id-locations-file (expand-file-name ".orgids" clay-org-directory)))
 
 
-(defun clay--org-mode-hooks ()
-  "Hook to run when entering `org-mode'."
-  (variable-pitch-mode)
-  (visual-line-mode 1)
-  (setq evil-auto-indent nil))
-
 (defun clay-start-task ()
   "Start a clock when a task change the state from TOOD to IN PROGRESS."
     (when (string= (org-get-todo-state) "STRT")
@@ -309,7 +303,8 @@ BEGIN and END are regexps which define the line range to use."
                       (variable-pitch-mode)
                       (visual-line-mode 1)
                       (auto-fill-mode 1)
-                      (setq evil-auto-indent nil)
+                      (setq evil-auto-indent nil
+                            hl-line-mode nil)
                       (diminish org-indent-mode))
               :custom
               (org-archive-save-context-info '(time category itags))

@@ -44,8 +44,19 @@
     :group 'clay-gui)
 
 (defcustom clay-default-theme nil
-  "The name of the theme to be used in the current session."
-  :type 'symbol
+  "The name of the theme to be used in the current session.
+
+If nil, no theme is loaded. When set, it disables all currently
+enabled themes and loads the given one if available."
+  :type '(choice (const :tag "None" nil)
+                 (symbol :tag "Theme name"))
+;;  :set (lambda (symbol value)
+;;         (set-default symbol value)
+;;         (mapc #'disable-theme custom-enabled-themes)
+;;         (when (and (symbolp value)
+;;                    (not (null value))
+;;                    (custom-theme-p value))
+;;           (load-theme value t)))
   :group 'clay-gui)
 
 
@@ -166,6 +177,7 @@
   (show-paren-mode 1))
 
 (use-package! vi-tilde-fringe
+              :disabled
               :remote (:host github :repo "syl20bnr/vi-tilde-fringe")
               :hook ((text-mode prog-mode conf-mode) . vi-tilde-fringe-mode))
 
@@ -196,16 +208,12 @@ This is required when using the daemon mode"
                       :inherit 'default
                       :weight 'normal
                       :height 1.0)
-;;  (set-face-attribute 'line-number nil
-;;                      :family   clay-fixed-font
-;;                      :inherit 'default
-;;                      :weight  'regular
-;;                      :slant 'normal)
-;;  (set-face-attribute 'line-number-current-line nil
-;;                      :family clay-fixed-font
-;;                      :inherit 'default
-;;                      :weight 'regular
-;;                      :slant 'normal)
+  (set-face-attribute 'line-number nil
+                      :family   "Mononoki Nerd Font")
+  (set-face-attribute 'line-number-current-line nil
+                      ;; I dont want to inherit because overwrite the theme
+                      ;; style instead of only hcange the family
+                      :family   "Mononoki Nerd Font")
   )
 
 
@@ -223,6 +231,8 @@ This is required when using the daemon mode"
   "Initialize Clay UI settings for new daemon FRAME."
   (clay-set-fonts frame)
   (clay-set-background frame))
+
+(mapc #'clay-set-fonts (frame-list))
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions #'clay--init-ui-for-frame)
