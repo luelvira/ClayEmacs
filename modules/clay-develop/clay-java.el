@@ -51,15 +51,7 @@
 (use-package! java-mode
   :remote nil
   :mode "\\.java\\'"
-  :hook (java-mode . clay-java-style-setup)
-  :config
-  (with-eval-after-load 'flycheck
-    (flycheck-define-checker java-checkstyle
-      "A java syntax and style checker using Chekcstyle."
-      :command ("checkstyle" "-f" "xml" "-c" "~/.config/checkstyle/google_checks.xml" source)
-      :error-parser flycheck-parse-checkstyle
-      :modes java-mode)
- (add-to-list 'flycheck-checkers 'java-checkstyle)))
+  :hook (java-mode . clay-java-style-setup))
 
 
 (use-package! maven-test-mode

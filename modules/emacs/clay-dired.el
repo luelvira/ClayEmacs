@@ -3,7 +3,7 @@
 ;; Copyright (C) 2025  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,6 +23,22 @@
 ;; 
 
 ;;; Code:
+
+;;;###autolad
+(defun dired-do-flagged-delete-skip-trash ()
+  "Permanentlyl delete the flagged for deletion in Dired.
+
+This function temporarily sets `delete-by-moving-to-trash' to nil
+and uses `dired-do-flagged-delete' to delete the files immediately."
+  (interactive)
+  (unless (derived-mode-p 'dired-mode)
+    (user-error "This command is only available inside a Dired buffer"))
+  (let ((delete-by-moving-to-trash nil))
+    (dired-do-flagged-delete)))
+
+
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "X") #'dired-do-flagged-delete-skip-trash))
 
 (use-package! dirvish
   :after evil-collection
