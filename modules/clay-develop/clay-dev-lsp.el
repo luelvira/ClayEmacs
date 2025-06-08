@@ -27,11 +27,15 @@
 (use-package! eglot
   :remote (:type built-in)
   :commands eglot eglot-ensure
+  :custom
+  (eglot-ignored-server-capabilities '(:documentHighlightProvider))
   :init
-  (setq eglot-sync-connect 1
-        eglot-auto-display-help-buffer nil
-        eldoc-echo-area-use-multiline-p t
-        eglot-autoshutdown t)
+  (setq
+    eglot-sync-connect 1
+    eglot-auto-display-help-buffer nil
+    eldoc-echo-area-use-multiline-p t
+    eglot-autoshutdown t
+    eglot-stay-out-of '(flymake))
   (setq-default eglot-workspace-configuration
                 '((haskell
                    (plugin

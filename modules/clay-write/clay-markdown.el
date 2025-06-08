@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by

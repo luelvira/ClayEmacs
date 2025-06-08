@@ -36,7 +36,7 @@
 
 (defcustom clay--hugo-dirs (list
                             'org org-roam-directory
-                            'hugo lem/website_folder)
+                            'hugo clay-website_folder)
   "A key-list with the name of the project and the base dir of them."
   :type '(plist :key-type (symbol :tag "Name")  :value-type (directory :tag "Base directory"))
   :group 'clayemacs

@@ -131,17 +131,19 @@
   (setq org-todo-keywords '((sequence "TODO(t)" "STRT(s)" "BACK(b)" "|" "DONE(d!)")
                             (sequence "|" "HOLD(h)" "CANCELED(c)")))
   (setq org-tag-alist
-        '((:startgroup) ;Put mutually exclusive tags here
-          ("@college" . ?C)
-          ("@home" . ?H)
-          ("@PHD" . ?P)
-          ("@UI" . ?U)
-          (:endgroup)
-          (:startgroup)
-          ("INACTIVE" . ?I)
-          ("TOC" . ?T)
-          ("HIDDEN" . ?F)
-          (:endgroup)))
+    '(
+       (:startgroup) ;Put mutually exclusive tags here
+       ("@college" . ?C)
+       ("@home" . ?H)
+       ("@PHD" . ?P)
+       ("@PERSONAL" . ?p)
+     ; ("@UI" . ?U)
+       (:endgroup)
+       (:startgroup)
+       ("INACTIVE" . ?I)
+       ("TOC" . ?T)
+       ("HIDDEN" . ?F)
+       (:endgroup)))
 
   (setq org-use-tag-inheritance t ; I want to keep it active
         org-tags-exclude-from-inheritance '("PROJECT")))
@@ -296,13 +298,13 @@ BEGIN and END are regexps which define the line range to use."
 (use-package! org
               :remote (:type git :host github :repo "emacs-straight/org-mode")
               :hook ((org-mode . clay--org-mode-hook)
-                     (org-mode . org-indent-mode)
                      (before-save . save-and-update-includes)
                      (org-after-todo-state-change . clay-start-task))
               :init (defun clay--org-mode-hook ()
                       (variable-pitch-mode)
                       (visual-line-mode 1)
                       (auto-fill-mode 1)
+                      (org-indent-mode)
                       (setq evil-auto-indent nil
                             hl-line-mode nil)
                       (diminish org-indent-mode))

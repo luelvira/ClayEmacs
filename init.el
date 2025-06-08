@@ -90,8 +90,8 @@
 ;;
 (require 'clay-develop)
 (require 'clay-vterm)
-;;;; (require 'clay-write)
 (require 'clay-workflow)
+(require 'clay-write)
 
 (provide 'init)
 ;;; init.el ends here

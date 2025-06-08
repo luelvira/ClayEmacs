@@ -36,7 +36,7 @@
    "\\parskip=6pt\n"
    "\\renewcommand{\\familydefault}{\\sfdefault}\n")
   "Define an empty class for latex."
-  :group 'lem-write
+  :group 'clay-write
   :type 'string)
 
 (defcustom clay-org-altacv-latex-template
@@ -71,7 +71,7 @@
    "\\renewcommand{\\ratingmarker}{\\faCircle}\n")
   "Template for the CV generator."
   :type 'string
-  :group 'lem-write)
+  :group 'clay-write)
 
 (defcustom clay-org-moderncv
   (concat
@@ -86,7 +86,7 @@
    "\\social[github]{luelvira}\n")
   "Template for modern cv."
   :type 'string
-  :group 'lem-write)
+  :group 'clay-write)
 
 (with-eval-after-load 'ox-latex
   (setq org-cite-biblatex-options 

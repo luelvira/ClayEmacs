@@ -78,8 +78,6 @@
                  (js-mode . js-ts-mode)
                  (js2-mode . javascript-ts-mode)
                  (json-mode . json-ts-mode)
-                 (json-mode . json-ts-mode)
-                 (python-mode . python-ts-mode)
                  (rjsx-mode . tsx-ts-mode)
                  (sh-base-mode . bash-ts-mode)
                  (sh-mode . bash-ts-mode)

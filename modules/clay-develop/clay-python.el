@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -66,14 +66,25 @@
                (widen)
                (write-region nil nil temp-file nil 0)))))))
 
+
+(use-package! flymake-ruff
+  :remote (:type git :host github :repo "erickgnavar/flymake-ruff")
+  :hook (eglot-managed-mode . flymake-ruff-load))
+
 (use-package! python-mode
-  :hook
-  (python-mode . (lambda ()
-                   (add-hook 'flaymake-diagnostic-functions #'clay-flymake-ruff nil t))))
   :init
-  (setq python-indent-guess-indent-offset t
-        python-indent-guess-indent-offset-verbose nil
-        python-shell-interpreter "python3"))
+  (setq
+    python-indent-guess-indent-offset t
+    python-indent-guess-indent-offset-verbose nil
+    python-shell-interpreter "python3")
+  :config
+  (with-eval-after-load 'treesit
+    (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+    (define-key python-mode-map (kbd "<tab>") #'indent-for-tab-command))
+  (add-hook 'python-ts-mode-hook
+    (lambda ()
+      (setq python-indent-offset 4)
+      (electric-indent-local-mode -1))))
 
 (use-package! pyvenv
   :init (setenv "WORKON_HOME" "/home/lucas/.pyenv/versions")
@@ -84,6 +95,19 @@
   (add-to-list 'global-mode-string
                '(pyvenv-virtual-env-name (" venv:" pyvenv-virtual-env-name " "))
                'append))
+
+
+(clay-map-prettify-symbols '(python-mode python-ts-mode)
+  :def "def"
+  :lambda "lambda"
+  :null "None"
+  :true "True" :false "False"
+  :int "int" :str "str"
+  :float "float" :bool "bool"
+  :not "not"
+  :in "in" :not-in "not in"
+  :and "and" :or "or")
+
 
 
 (provide 'clay-python)

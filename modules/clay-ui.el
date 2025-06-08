@@ -28,20 +28,8 @@
           :group 'clay
           :tag "Clay UI")
 
-(defcustom clay-default-font "FiraCodeNerdFont"
-  "Font string for UI fonts."
-  :type 'string
-  :group 'clay-gui)
+(require 'clay-font-settings)
 
-(defcustom clay-fixed-font "FiraCodeNerdFont"
-  "Font string for fixed pitch modes."
-  :type 'string
-  :group 'clay-gui)
-
-(defcustom clay-variable-font "Iosevka Aile"
-  "Font string for variable pitch texts."
-    :type 'string
-    :group 'clay-gui)
 
 (defcustom clay-default-theme nil
   "The name of the theme to be used in the current session.
@@ -60,43 +48,6 @@ enabled themes and loads the given one if available."
   :group 'clay-gui)
 
 
-(defun clay-update-comment-font-face ()
-  (if clay-ui-italic-comment-face
-    (set-face-attribute 'font-lock-comment-face nil :slant 'italic)
-    (set-face-attribute 'font-lock-comment-face nil :slant 'normal)))
-
-
-(defun clay-update-keyword-font-face ()
-  (if clay-ui-italic-comment-face
-    (set-face-attribute 'font-lock-keyword-face nil :slant 'italic)
-    (set-face-attribute 'font-lock-keyword-face nil :slant 'normal)))
-
-
-(defcustom clay-ui-italic-comment-face t
-           "Non-nil to enable italic face in comments."
-           :group 'clay-gui
-           :type 'boolean
-           :set (lambda (k v)
-                  (set-default k v)
-                  (clay-update-comment-font-face)))
-
-(defcustom clay-font-lock-italic-keyword-face nil
-           "Non-nil to enable italic face in keywords."
-           :type 'boolean
-           :group 'clay-gui
-           :set (lambda (k v)
-                  (set-default k v)
-                  (clay-update-keyword-font-face)))
-
-(defcustom clay-enable-ligatures nil
-           "Non-nil to enable ligatures in `prog-mode'."
-           :type 'boolean
-           :group 'clay-gui
-           :set (lambda (_ v)
-                  (when (fboundp 'global-ligature-mode)
-                    (global-ligature-mode v))))
-
-
 (defcustom clay-alpha-value 90
   "The default value of transparency used for the current frame."
   :set (lambda (k v)
@@ -107,34 +58,8 @@ enabled themes and loads the given one if available."
   :type 'number)
 
 
-(defvar clay-ligatures-prog-mode-list
-  '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
-    ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
-    "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
-    "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
-    "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
-    "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
-    "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
-    "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
-    ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
-    "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
-    "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
-    "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
-    "\\\\" "://"))
 
 
-;; Install package
-
-(use-package! ligature
-  :disabled
-  :config
- ;; Enable the "www" ligature in every possible major mode
-  (ligature-set-ligatures 't '("www"))
-  ;; Enable traditional ligature support in eww-mode, if the
-  ;; `variable-pitch' face supports it
-  (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
-  (ligature-set-ligatures '(prog-mode org-mode) clay-ligatures-prog-mode-list)
- (global-ligature-mode t))
 
 (use-package! nerd-icons :defer t)
 

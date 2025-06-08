@@ -43,5 +43,7 @@
   :config
   (setq dtrt-indent-verbosity 0))
 
+(add-hook 'prog-mode-hook #'(lambda () (setq-local truncate-lines t)))
+
 (provide 'clay-dev-enhancements)
 ;;; clay-dev-enhancements.el ends here

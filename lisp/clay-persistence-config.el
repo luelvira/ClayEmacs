@@ -86,9 +86,9 @@
                                                    search-ring regexp-search-ring)) ;; persist search
              (savehist-mode 1))
 
-(use-package! save-place
+(use-package! saveplace
   :after no-littering
-  :remote nil
+  :remote (:type built-in)
   :config
   (setq save-place-file (no-littering-expand-var-file-name "places"))
   (save-place-mode 1))

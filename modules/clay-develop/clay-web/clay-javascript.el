@@ -37,6 +37,12 @@
   :group 'clay-dev
   :type 'number)
 
+(setq js-modes-list nil)
+(defvar js-modes-list '(js-mode js-ts-mode js2-mode)
+  "A list with all the modes enabled in this session.
+
+The values in this list are used to define the prettify-symbols-alist.")
+
 (defun clay-update-js-indentation ()
   "Setup the default indent for javascript files."
   (interactive)
@@ -75,7 +81,10 @@ Each element can be a symbol, when mode and package are equals, or a cons cell (
 (use-package! rjsx-mode
   :when clay-react?
   :mode ("\\.\\(t\\|j\\)sx\\'")
-  :hook (rjsx-mode . rainbow-delimiters-mode))
+  :hook (rjsx-mode . rainbow-delimiters-mode)
+  :config
+  (dolist (mode  '(rjsx-mode tsx-ts-mode))
+    (cl-pushnew mode js-modes-list)))
 
 (use-package! typescript-ts-mode
   :when clay-ts?
@@ -83,8 +92,11 @@ Each element can be a symbol, when mode and package are equals, or a cons cell (
   :hook ((typescript-ts-mode . eglot-ensure))
   :custom
   (lsp-clients-typescript-server-args '("--stdio" "--tsserver-log-file" "/dev/stderr"))
-  (typescript-indent-level clay-js-indentation-value))
-
+  (typescript-indent-level clay-js-indentation-value)
+  :config
+  (dolist (mode '(tsx-mode tsx-ts-mode typescript-mode typescript-ts-mode typescript-tsx-mode tsx-ts-mode))
+    (cl-pushnew mode js-modes-list)))
+    
 
 (use-package! prettier-js
 :hook (
@@ -104,6 +116,19 @@ Each element can be a symbol, when mode and package are equals, or a cons cell (
   :hook ((js-ts-mode . eglot-ensure)
           (js-ts-mode . clay--setup-eslint-flymake))
   :config (clay-update-js-indentation))
+
+
+
+(clay-map-prettify-symbols js-modes-list
+  :def "function"
+  :lambda "() =>"
+  :lambda "()=>"
+  :map ".map("
+  :null "null"
+  :true "true" :false "false"
+  :not "!"
+  :and "&&" :or "||"
+  :for "for")
 
 
 (provide 'clay-javascript)

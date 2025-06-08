@@ -3,7 +3,7 @@
 ;; Copyright (C) 2024  Lucas Elvira Martín
 
 ;; Author: Lucas Elvira Martín <lucaselvira96@gmail.com>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -24,22 +24,22 @@
 
 ;;; Code:
 
-(defcustom lem-write-dictionaries-list '("en_US" "es_ES")
+(defcustom clay-write-dictionaries-list '("en_US" "es_ES")
   "List of dictionaries used for spell checking."
   :type 'list
-  :group 'lem-write)
+  :group 'clay-write)
 
-(defcustom lem-write-langtool-p t
+(defcustom clay-write-langtool-p t
   "Whether langtool should be used or not."
-  :type 'bool
-  :group 'lem-write)
+  :type 'boolean
+  :group 'clay-write)
 
 (defcustom
-  lem-write-langtool-path
+  clay-write-langtool-path
   "~/.local/lib/languageTool/LanguageTool-6.3/languagetool-commandline.jar"
   "Path where the langtool jar is stored."
   :type 'string
-  :group 'lem-write
+  :group 'clay-write
   :set (lambda (k v)
          (set-default k v)
          (when
@@ -52,41 +52,41 @@
     "hunspell")
   "Determinate the software that will be used to check the spelling."
   :type 'string
-  :group 'lem-write
+  :group 'clay-write
   :set (lambda (k v)
          (set-default k v)
          (setq ispell-program-name v)))
 
-(defvar lem-write-dictionaries-pos 0
+(defvar clay-write-dictionaries-pos 0
 "Current index for the dictionaries id.")
 
 (defmacro inc (var)
   "Macro to increment VAR using modular arithmetic."
-  `(setq ,var (mod (+ 1 ,var) (length lem-write-dictionaries-list))))
+  `(setq ,var (mod (+ 1 ,var) (length clay-write-dictionaries-list))))
 
-(defun lem-write-switch-dictionary ()
-  "Function to iterate over `lem-write-dictionaries-list'."
+(defun clay-write-switch-dictionary ()
+  "Function to iterate over `clay-write-dictionaries-list'."
   (interactive)
   (let* ((dic ispell-current-dictionary)
-         (change (nth (inc lem-write-dictionaries-pos) lem-write-dictionaries-list)))
+         (change (nth (inc clay-write-dictionaries-pos) clay-write-dictionaries-list)))
     (ispell-change-dictionary change)
     (message "Dictionary switched from %s to %s" dic change)))
 
 (use-package! flyspell
   :config
   (setq ispell-program-name clay-flyspell-name)
-  (setq ispell-current-dictionary (nth lem-write-dictionaries-pos lem-write-dictionaries-list))
+  (setq ispell-current-dictionary (nth clay-write-dictionaries-pos clay-write-dictionaries-list))
   :hook (text-mode . flyspell-mode)
   :bind (("M-<f7>" . flyspell-buffer)
          ("<f7>"   . flyspell-word)
          ("C-;"    . flyspell-auto-correct-previous-word))
-  ("C-c n d" . lem-write-switch-dictionary))
+  ("C-c n d" . clay-write-switch-dictionary))
 
-(when lem-write-langtool-p
+(when clay-write-langtool-p
   (use-package! langtool
   :config
-  (setq langtool-language-tool-jar lem-write-langtool-path
-        langtool-default-language (nth lem-write-dictionaries-pos lem-write-dictionaries-list))))
+  (setq langtool-language-tool-jar clay-write-langtool-path
+        langtool-default-language (nth clay-write-dictionaries-pos clay-write-dictionaries-list))))
 
 
 (provide 'clay-syntax)
